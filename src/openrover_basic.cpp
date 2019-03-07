@@ -167,8 +167,8 @@ const int SLOW_SIZE = sizeof(ROBOT_DATA_INDEX_SLOW)/sizeof(ROBOT_DATA_INDEX_SLOW
 std::ofstream global_file ("tuning_data.csv");
 const bool LOG_CONTROLLER_DATA = false;
 
-const double K_P = 80;
-const double K_I = 200;
+const double K_P = 10;
+const double K_I = 100;
 const double K_D = 0;
 
 OpenRover::OpenRover( ros::NodeHandle& nh, ros::NodeHandle& nh_priv ) :
@@ -929,6 +929,11 @@ void OpenRover::serialManager()
                     motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] = right_controller_.calculate(right_vel_commanded_, right_vel_measured_, dt);
                     left_vel_filtered_ = left_controller_.velocity_filtered_;
                     right_vel_filtered_ = right_controller_.velocity_filtered_;
+
+                    ROS_INFO("Left PID: %i  Right PID: %i", left_controller_.PID_, right_controller_.PID_);
+                    ROS_INFO("Left Int: %i  Right Int: %i", left_controller_.stop_integrating_, right_controller_.stop_integrating_);
+                    ROS_INFO("Left Min: %i  Right Min: %i", left_controller_.at_min_motor_speed_, right_controller_.at_min_motor_speed_);
+                    ROS_INFO("Left Max: %i  Right Max: %i", left_controller_.at_max_motor_speed_, right_controller_.at_max_motor_speed_);
                 }
             }
 

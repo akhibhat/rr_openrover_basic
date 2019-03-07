@@ -123,7 +123,7 @@ int OdomControl::PID(double error, double dt)
     {
         stop_integrating_ = false;
     }
-
+    PID_ = pid_val;
     return (int)round(pid_val + 125.0);
 }
 

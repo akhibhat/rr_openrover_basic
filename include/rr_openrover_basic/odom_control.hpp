@@ -41,6 +41,7 @@ public:
     double K_P_;
     double K_I_;
     double K_D_;
+    double PID_;
     double integral_value_;
 
     //Returned value
