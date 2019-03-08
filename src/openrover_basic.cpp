@@ -930,7 +930,7 @@ void OpenRover::serialManager()
                     left_vel_filtered_ = left_controller_.velocity_filtered_;
                     right_vel_filtered_ = right_controller_.velocity_filtered_;
 
-                    ROS_INFO("Left PID: %i  Right PID: %i", left_controller_.PID_, right_controller_.PID_);
+                    ROS_INFO("Left PID: %.12f  Right PID: %.12f", left_controller_.PID_, right_controller_.PID_);
                     ROS_INFO("Left Int: %i  Right Int: %i", left_controller_.stop_integrating_, right_controller_.stop_integrating_);
                     ROS_INFO("Left Min: %i  Right Min: %i", left_controller_.at_min_motor_speed_, right_controller_.at_min_motor_speed_);
                     ROS_INFO("Left Max: %i  Right Max: %i", left_controller_.at_max_motor_speed_, right_controller_.at_max_motor_speed_);
