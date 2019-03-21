@@ -195,6 +195,7 @@ double OdomControl::filter(double velocity, double dt)
     if (skip_measurement_)
     {
         time += dt;
+        ROS_WARN("Skipping measurement");
     }
     else
     {
@@ -203,8 +204,9 @@ double OdomControl::filter(double velocity, double dt)
 
     //Check for impossible acceleration
     float accel = (velocity - velocity_history_[0]) / time;
+    ROS_INFO("Acceleration: %f", accel);
 
-    if (fabs(accel) > MAX_ACCEL_CUTOFF_)
+    if (false) //fabs(accel) > MAX_ACCEL_CUTOFF_)
     {
         skip_measurement_ = true;
         //throw std::string("Skipping encoder reading");
@@ -217,6 +219,7 @@ double OdomControl::filter(double velocity, double dt)
         velocity_history_.insert(velocity_history_.begin(), velocity_filtered_);
         velocity_history_.pop_back();
     }
+
     return velocity_filtered_;
 
     //for billinear transform

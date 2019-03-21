@@ -33,66 +33,66 @@ const int LOOP_RATE = 1000; //microseconds between serial manager calls
 
 //flipper constants__________
 //odometry flipper constants
-const float ODOM_ENCODER_COEF_F = 110.8; //r_track*2*pi*(2.54/100)/96*1e6/45
-const float ODOM_AXLE_TRACK_F  = 10.75; //distance between centerlines of tracks
-const float ODOM_ANGULAR_COEF_F = 0.5/(ODOM_AXLE_TRACK_F*2.54/100); //rad per meter
-const float ODOM_TRACTION_FACTOR_F = 0.75;
-//low speed mode cmd_vel to motor command flipper constants
-const int MOTOR_SPEED_LINEAR_COEF_F_LS = 100;
-const int MOTOR_SPEED_ANGULAR_COEF_F_LS = 60;
-//high speed mode cmd_vel to motor command flipper constants
-const int MOTOR_SPEED_LINEAR_COEF_F_HS = 90;
-const int MOTOR_SPEED_ANGULAR_COEF_F_HS = 50;
+    const float ODOM_ENCODER_COEF_F = 110.8; //r_track*2*pi*(2.54/100)/96*1e6/45
+    const float ODOM_AXLE_TRACK_F  = 10.75; //distance between centerlines of tracks
+    const float ODOM_ANGULAR_COEF_F = 0.5/(ODOM_AXLE_TRACK_F*2.54/100); //rad per meter
+    const float ODOM_TRACTION_FACTOR_F = 0.75;
+    //low speed mode cmd_vel to motor command flipper constants
+    const int MOTOR_SPEED_LINEAR_COEF_F_LS = 100;
+    const int MOTOR_SPEED_ANGULAR_COEF_F_LS = 60;
+    //high speed mode cmd_vel to motor command flipper constants
+    const int MOTOR_SPEED_LINEAR_COEF_F_HS = 90;
+    const int MOTOR_SPEED_ANGULAR_COEF_F_HS = 50;
 
 //4wd constants__________
 //odometry 4wd constants
-const float ODOM_ENCODER_COEF_4WD = 182.405; //r_wheel*2*pi*(2.54/100)/96*1e6/45
-const float ODOM_AXLE_TRACK_4WD  = 14.375; //distance between wheels
-const float ODOM_ANGULAR_COEF_4WD = 1.0/(ODOM_AXLE_TRACK_4WD*2.54/100); //rad per meter
-const float ODOM_TRACTION_FACTOR_4WD = 0.610;
-// low speed mode cmd_vel to motor command 4wd constants
-const int MOTOR_SPEED_LINEAR_COEF_4WD_LS = 293;
-const int MOTOR_SPEED_ANGULAR_COEF_4WD_LS = 86;
-//high speed cmd_vel to motor command 4wd constants
-const int MOTOR_SPEED_LINEAR_COEF_4WD_HS = 31;
-const int MOTOR_SPEED_ANGULAR_COEF_4WD_HS = 6;
-const float MOTOR_SPEED_WEIGHT_COEF_A = 0.0034383;
-const float MOTOR_SPEED_WEIGHT_COEF_B = -0.011618;
-const float MOTOR_SPEED_WEIGHT_COEF_C = 0.99181;
-const float MOTOR_SPEED_CW_TURN_COEF = 1.0;
+    const float ODOM_ENCODER_COEF_4WD = 182.405; //r_wheel*2*pi*(2.54/100)/96*1e6/45
+    const float ODOM_AXLE_TRACK_4WD  = 14.375; //distance between wheels
+    const float ODOM_ANGULAR_COEF_4WD = 1.0/(ODOM_AXLE_TRACK_4WD*2.54/100); //rad per meter
+    const float ODOM_TRACTION_FACTOR_4WD = 0.610;
+    // low speed mode cmd_vel to motor command 4wd constants
+    const int MOTOR_SPEED_LINEAR_COEF_4WD_LS = 293;
+    const int MOTOR_SPEED_ANGULAR_COEF_4WD_LS = 86;
+    //high speed cmd_vel to motor command 4wd constants
+    const int MOTOR_SPEED_LINEAR_COEF_4WD_HS = 31;
+    const int MOTOR_SPEED_ANGULAR_COEF_4WD_HS = 6;
+    const float MOTOR_SPEED_WEIGHT_COEF_A = 0.0034383;
+    const float MOTOR_SPEED_WEIGHT_COEF_B = -0.011618;
+    const float MOTOR_SPEED_WEIGHT_COEF_C = 0.99181;
+    const float MOTOR_SPEED_CW_TURN_COEF = 1.0;
 
 
 //2wd constants__________
 //odometry 2wd constants
-const float ODOM_ENCODER_COEF_2WD = 182.405; //r_track*2*pi*(2.54/100)/96*1e6/45
-const float ODOM_AXLE_TRACK_2WD  = 14.375; //distance between wheels
-const float ODOM_ANGULAR_COEF_2WD = 1.0/(ODOM_AXLE_TRACK_2WD*2.54/100); //rad per meter
-const float ODOM_TRACTION_FACTOR_2WD = 0.9877;
-//low speed mode cmd_vel to motor command 2wd constants
-const int MOTOR_SPEED_LINEAR_COEF_2WD_LS = 30;
-const int MOTOR_SPEED_ANGULAR_COEF_2WD_LS = 10;
-//high speed cmd_vel to motor command 2wd constants
-const int MOTOR_SPEED_LINEAR_COEF_2WD_HS = 30;
-const int MOTOR_SPEED_ANGULAR_COEF_2WD_HS = 10;
+    const float ODOM_ENCODER_COEF_2WD = 182.405; //r_track*2*pi*(2.54/100)/96*1e6/45
+    const float ODOM_AXLE_TRACK_2WD  = 14.375; //distance between wheels
+    const float ODOM_ANGULAR_COEF_2WD = 1.0/(ODOM_AXLE_TRACK_2WD*2.54/100); //rad per meter
+    const float ODOM_TRACTION_FACTOR_2WD = 0.9877;
+    //low speed mode cmd_vel to motor command 2wd constants
+    const int MOTOR_SPEED_LINEAR_COEF_2WD_LS = 30;
+    const int MOTOR_SPEED_ANGULAR_COEF_2WD_LS = 10;
+    //high speed cmd_vel to motor command 2wd constants
+    const int MOTOR_SPEED_LINEAR_COEF_2WD_HS = 30;
+    const int MOTOR_SPEED_ANGULAR_COEF_2WD_HS = 10;
 
-// Velocity Controller Constants
-const int CONTROLLER_DEADBAND_COMP = 0; //reduce MOTOR_DEADBAND by this amount
-const int MAX_ACCEL_CUTOFF = 20; // m/s^2
+    // Velocity Controller Constants
+    const int CONTROLLER_DEADBAND_COMP = 0; //reduce MOTOR_DEADBAND by this amount
+    const int MAX_ACCEL_CUTOFF = 20; // m/s^2
 
-//general openrover_basic platform constants
-const int ENCODER_MAX = 5000;
-const int ENCODER_MIN = 1;
-const int MOTOR_FLIPPER_COEF = 100;
+    //general openrover_basic platform constants
+    const int ENCODER_MAX = 5000;
+    const int ENCODER_MIN = 1;
+    const int MOTOR_FLIPPER_COEF = 100;
 
-const float ODOM_SMOOTHING = 50.0;
+    const float ODOM_SMOOTHING = 50.0;
 
-const float WEIGHT_COMPENSATION_FACTOR = 10.0;
-const int MOTOR_DEADBAND = 9;
-const int MOTOR_NEUTRAL = 125;
-const int MOTOR_SPEED_MAX = 250;
-const int MOTOR_SPEED_MIN = 0;
-const int MOTOR_DIFF_MAX = 200; //Max command difference between left and
-// right motors in low speed mode, prevents overcurrent
+    const float WEIGHT_COMPENSATION_FACTOR = 10.0;
+    const int MOTOR_DEADBAND = 9;
+    const int MOTOR_NEUTRAL = 125;
+    const int MOTOR_SPEED_MAX = 250;
+    const int MOTOR_SPEED_MIN = 0;
+    const int MOTOR_DIFF_MAX = 200; //Max command difference between left and
+    // right motors in low speed mode, prevents overcurrent
 
 //Firmware parameters. Kept numbering from Firmware SDK-Protocol Documents_07-03-2018_1
 //to maintain consistency. Some parameters are still a work in progress (WIP)
@@ -106,6 +106,8 @@ const int i_REG_FLIPPER_FB_POSITION_POT2 = 8; //5hz
 
 const int i_REG_MOTOR_FB_CURRENT_LEFT = 10; //5hz
 const int i_REG_MOTOR_FB_CURRENT_RIGHT = 12; //5hz
+const int i_REG_MOTOR_ENCODER_COUNT_LEFT = 14; //?
+const int i_REG_MOTOR_ENCODER_COUNT_RIGHT = 16; //?
 const int i_REG_MOTOR_FAULT_FLAG_LEFT = 18; //1hz ------ WIP
 const int i_REG_MOTOR_TEMP_LEFT = 20; //1hz
 const int i_REG_MOTOR_TEMP_RIGHT = 22; //1hz
@@ -141,24 +143,24 @@ const int i_BATTERY_CURRENT_A = 68;
 const int i_BATTERY_CURRENT_B = 70;
 
 const int ROBOT_DATA_INDEX_FAST[] = {
-i_ENCODER_INTERVAL_MOTOR_LEFT, i_ENCODER_INTERVAL_MOTOR_RIGHT}; /*,
-i_ENCODER_INTERVAL_MOTOR_FLIPPER}; ----WIP //10hz*/
+    i_ENCODER_INTERVAL_MOTOR_LEFT, i_ENCODER_INTERVAL_MOTOR_RIGHT}; /*,
+    i_ENCODER_INTERVAL_MOTOR_FLIPPER}; ----WIP //10hz*/
 
 const int ROBOT_DATA_INDEX_MEDIUM[] = {
-i_REG_PWR_TOTAL_CURRENT, //i_REG_MOTOR_FB_RPM_LEFT,i_REG_MOTOR_FB_RPM_RIGHT, ----WIP
-i_REG_FLIPPER_FB_POSITION_POT1, i_REG_FLIPPER_FB_POSITION_POT2,
-i_REG_MOTOR_FB_CURRENT_LEFT, i_REG_MOTOR_FB_CURRENT_RIGHT, i_REG_MOTOR_CHARGER_STATE,
-i_REG_POWER_A_CURRENT, i_REG_POWER_B_CURRENT, i_REG_MOTOR_FLIPPER_ANGLE,
-i_BATTERY_CURRENT_A,i_BATTERY_CURRENT_B
-//i_to_computer_REG_MOTOR_SIDE_FAN_SPEED, i_to_computer_REG_MOTOR_SLOW_SPEED ----WIP
-};
+    i_REG_PWR_TOTAL_CURRENT, //i_REG_MOTOR_FB_RPM_LEFT,i_REG_MOTOR_FB_RPM_RIGHT, ----WIP
+    i_REG_FLIPPER_FB_POSITION_POT1, i_REG_FLIPPER_FB_POSITION_POT2,
+    i_REG_MOTOR_FB_CURRENT_LEFT, i_REG_MOTOR_FB_CURRENT_RIGHT, i_REG_MOTOR_CHARGER_STATE,
+    i_REG_POWER_A_CURRENT, i_REG_POWER_B_CURRENT, i_REG_MOTOR_FLIPPER_ANGLE,
+    i_BATTERY_CURRENT_A,i_BATTERY_CURRENT_B, i_REG_MOTOR_ENCODER_COUNT_LEFT, i_REG_MOTOR_ENCODER_COUNT_RIGHT
+    //i_to_computer_REG_MOTOR_SIDE_FAN_SPEED, i_to_computer_REG_MOTOR_SLOW_SPEED ----WIP
+    };
 
 const int ROBOT_DATA_INDEX_SLOW[] = {
-//i_REG_MOTOR_FAULT_FLAG_LEFT, ----WIP
-i_REG_MOTOR_TEMP_LEFT,
-i_REG_MOTOR_TEMP_RIGHT, i_REG_POWER_BAT_VOLTAGE_A, i_REG_POWER_BAT_VOLTAGE_B,
-i_REG_ROBOT_REL_SOC_A, i_REG_ROBOT_REL_SOC_B,
-i_BATTERY_STATUS_A, i_BATTERY_STATUS_B, i_BATTERY_MODE_A, i_BATTERY_MODE_B, i_BATTERY_TEMP_A, i_BATTERY_TEMP_B, i_BATTERY_VOLTAGE_A, i_BATTERY_VOLTAGE_B, i_BUILDNO};
+    //i_REG_MOTOR_FAULT_FLAG_LEFT, ----WIP
+    i_REG_MOTOR_TEMP_LEFT,
+    i_REG_MOTOR_TEMP_RIGHT, i_REG_POWER_BAT_VOLTAGE_A, i_REG_POWER_BAT_VOLTAGE_B,
+    i_REG_ROBOT_REL_SOC_A, i_REG_ROBOT_REL_SOC_B,
+    i_BATTERY_STATUS_A, i_BATTERY_STATUS_B, i_BATTERY_MODE_A, i_BATTERY_MODE_B, i_BATTERY_TEMP_A, i_BATTERY_TEMP_B, i_BATTERY_VOLTAGE_A, i_BATTERY_VOLTAGE_B, i_BUILDNO};
 
 const int FAST_SIZE = sizeof(ROBOT_DATA_INDEX_FAST)/sizeof(ROBOT_DATA_INDEX_FAST[0]);
 const int MEDIUM_SIZE = sizeof(ROBOT_DATA_INDEX_MEDIUM)/sizeof(ROBOT_DATA_INDEX_MEDIUM[0]);
@@ -167,8 +169,8 @@ const int SLOW_SIZE = sizeof(ROBOT_DATA_INDEX_SLOW)/sizeof(ROBOT_DATA_INDEX_SLOW
 std::ofstream global_file ("tuning_data.csv");
 const bool LOG_CONTROLLER_DATA = false;
 
-const double K_P = 10;
-const double K_I = 100;
+const double K_P = 50;
+const double K_I = 0; //100;
 const double K_D = 0;
 
 OpenRover::OpenRover( ros::NodeHandle& nh, ros::NodeHandle& nh_priv ) :
@@ -759,6 +761,9 @@ void OpenRover::publishMedRateData()
 
     medium_rate_pub.publish(med_msg);
     publish_med_rate_vals_ = false;
+
+    ROS_INFO("Left: %i", robot_data_[i_REG_MOTOR_ENCODER_COUNT_LEFT]);
+    ROS_INFO("Right: %i", robot_data_[i_REG_MOTOR_ENCODER_COUNT_RIGHT]);
     return;
 }
 
