@@ -204,7 +204,7 @@ double OdomControl::filter(double velocity, double dt)
 
     //Check for impossible acceleration
     float accel = (velocity - velocity_history_[0]) / time;
-    ROS_INFO("Acceleration: %f", accel);
+    ROS_INFO("Acceleration: %f, %f, %f, %f", accel, velocity, velocity_history_[0], (velocity - velocity_history_[0]));
 
     if (fabs(accel) > MAX_ACCEL_CUTOFF_)
     {

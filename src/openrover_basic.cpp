@@ -965,49 +965,66 @@ void OpenRover::updateOdometry()
 {
     int left_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_LEFT];
     int right_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_RIGHT];
+    bool is_right_stopped = false;
+    bool is_left_stopped = false;
 
-
-    if (left_enc < ENCODER_MIN)
-    {
-        left_enc = ENCODER_MIN;
-    }
-
-    if (left_enc < ENCODER_MAX)
-    {
-        if (motor_speeds_commanded_[LEFT_MOTOR_INDEX_] > 125)
-        {
-            left_vel_measured_ = odom_encoder_coef_/left_enc;
-        }
-        else
-        {
-            left_vel_measured_ = -odom_encoder_coef_/left_enc;
-        }
-    } 
-    else
+    if (left_enc == 0)
     {
         left_vel_measured_ = 0;
     }
-
-    if (right_enc < ENCODER_MIN)
-    {
-        right_enc = ENCODER_MIN;
-    }
-
-    if (right_enc < ENCODER_MAX)
-    {
-        if ( motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] > 125)
-        {
-            right_vel_measured_ = odom_encoder_coef_/right_enc;
-        }
-        else
-        {
-            right_vel_measured_ = -odom_encoder_coef_/right_enc;
-        }
-    } 
     else
     {
-        right_vel_measured_ = 0;
+        if (left_enc < ENCODER_MIN)
+        {
+            left_enc = ENCODER_MIN;
+        }
+
+        if (left_enc < ENCODER_MAX)
+        {
+            if (motor_speeds_commanded_[LEFT_MOTOR_INDEX_] > 125)
+            {
+                left_vel_measured_ = odom_encoder_coef_/left_enc;
+            }
+            else
+            {
+                left_vel_measured_ = -odom_encoder_coef_/left_enc;
+            }
+        } 
+        else
+        {
+            left_vel_measured_ = 0;
+        }
     }
+
+
+    if (right_enc == 0)
+    {
+        is_right_stopped = true;
+    }
+    else
+    {
+        if (right_enc < ENCODER_MIN)
+        {
+            right_enc = ENCODER_MIN;
+        }
+
+        if (right_enc < ENCODER_MAX)
+        {
+            if ( motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] > 125)
+            {
+                right_vel_measured_ = odom_encoder_coef_/right_enc;
+            }
+            else
+            {
+                right_vel_measured_ = -odom_encoder_coef_/right_enc;
+            }
+        } 
+        else
+        {
+            right_vel_measured_ = 0;
+        }
+    }
+
 /*
     if((ENCODER_MIN < left_enc) && (left_enc < ENCODER_MAX))
     {
