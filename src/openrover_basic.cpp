@@ -75,13 +75,13 @@ const int LOOP_RATE = 1000; //microseconds between serial manager calls
     const int MOTOR_SPEED_LINEAR_COEF_2WD_HS = 30;
     const int MOTOR_SPEED_ANGULAR_COEF_2WD_HS = 10;
 
-    // Velocity Controller Constants
+// Velocity Controller Constants
     const int CONTROLLER_DEADBAND_COMP = 0; //reduce MOTOR_DEADBAND by this amount
     const int MAX_ACCEL_CUTOFF = 20; // m/s^2
 
-    //general openrover_basic platform constants
-    const int ENCODER_MAX = 5000;
-    const int ENCODER_MIN = 1;
+//general openrover_basic platform constants
+    const int ENCODER_MAX = 5000; //anything over this means the robot is essentially stopped so just set to zero.
+    const int ENCODER_MIN = 40;  //about 80 measured but to be safe call it 40
     const int MOTOR_FLIPPER_COEF = 100;
 
     const float ODOM_SMOOTHING = 50.0;
@@ -935,15 +935,15 @@ void OpenRover::serialManager()
                     left_vel_filtered_ = left_controller_.velocity_filtered_;
                     right_vel_filtered_ = right_controller_.velocity_filtered_;
 
-                    ROS_INFO("Left PID: %.12f  Right PID: %.12f", left_controller_.PID_, right_controller_.PID_);
+/*                    ROS_INFO("Left PID: %.12f  Right PID: %.12f", left_controller_.PID_, right_controller_.PID_);
                     ROS_INFO("Left Int: %i  Right Int: %i", left_controller_.stop_integrating_, right_controller_.stop_integrating_);
                     ROS_INFO("Left Min: %i  Right Min: %i", left_controller_.at_min_motor_speed_, right_controller_.at_min_motor_speed_);
-                    ROS_INFO("Left Max: %i  Right Max: %i", left_controller_.at_max_motor_speed_, right_controller_.at_max_motor_speed_);
+                    ROS_INFO("Left Max: %i  Right Max: %i", left_controller_.at_max_motor_speed_, right_controller_.at_max_motor_speed_);*/
                 }
             }
 
             publishOdometry(left_vel_measured_, right_vel_measured_); //Publish new calculated odometry
-            publishWheelVels(); //call after publishOdomEnc()
+            publishWheelVels(); //call after publishOdometry()
             publishMotorSpeeds();
         }
         else if ((serial_medium_buffer_.size()==0) && publish_med_rate_vals_)
@@ -966,6 +966,49 @@ void OpenRover::updateOdometry()
     int left_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_LEFT];
     int right_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_RIGHT];
 
+
+    if (left_enc < ENCODER_MIN)
+    {
+        left_enc = ENCODER_MIN;
+    }
+
+    if (left_enc < ENCODER_MAX)
+    {
+        if (motor_speeds_commanded_[LEFT_MOTOR_INDEX_] > 125)
+        {
+            left_vel_measured_ = odom_encoder_coef_/left_enc;
+        }
+        else
+        {
+            left_vel_measured_ = -odom_encoder_coef_/left_enc;
+        }
+    } 
+    else
+    {
+        left_vel_measured_ = 0;
+    }
+
+    if (right_enc < ENCODER_MIN)
+    {
+        right_enc = ENCODER_MIN;
+    }
+
+    if (right_enc < ENCODER_MAX)
+    {
+        if ( motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] > 125)
+        {
+            right_vel_measured_ = odom_encoder_coef_/right_enc;
+        }
+        else
+        {
+            right_vel_measured_ = -odom_encoder_coef_/right_enc;
+        }
+    } 
+    else
+    {
+        right_vel_measured_ = 0;
+    }
+/*
     if((ENCODER_MIN < left_enc) && (left_enc < ENCODER_MAX))
     {
         if (motor_speeds_commanded_[LEFT_MOTOR_INDEX_] > 125)
@@ -996,7 +1039,8 @@ void OpenRover::updateOdometry()
     else
     {
         right_vel_measured_ = 0;
-    }
+    }*/
+
     return;
 }
 
