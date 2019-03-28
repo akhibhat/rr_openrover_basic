@@ -206,10 +206,10 @@ double OdomControl::filter(double velocity, double dt)
     float accel = (velocity - velocity_history_[0]) / time;
     ROS_INFO("Acceleration: %f", accel);
 
-    if (false) //fabs(accel) > MAX_ACCEL_CUTOFF_)
+    if (fabs(accel) > MAX_ACCEL_CUTOFF_)
     {
         skip_measurement_ = true;
-        //throw std::string("Skipping encoder reading");
+        throw std::string("Skipping encoder reading");
     }
     else
     {
