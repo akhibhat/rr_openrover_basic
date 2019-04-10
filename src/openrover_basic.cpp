@@ -169,8 +169,8 @@ const int SLOW_SIZE = sizeof(ROBOT_DATA_INDEX_SLOW)/sizeof(ROBOT_DATA_INDEX_SLOW
 std::ofstream global_file ("tuning_data.csv");
 const bool LOG_CONTROLLER_DATA = false;
 
-const double K_P = 50;
-const double K_I = 0; //100;
+const double K_P = 0;
+const double K_I = 50; //100;
 const double K_D = 0;
 
 OpenRover::OpenRover( ros::NodeHandle& nh, ros::NodeHandle& nh_priv ) :
@@ -1145,6 +1145,7 @@ int OpenRover::readCommand()
     read_checksum = read_buffer[0];
 
     checksum = 255-(dataNO + data1 + data2)%255;
+    ROS_INFO("Received: %02x,%02x,%02x,%02x,%02x", start_byte_read, dataNO, data1, data2, read_checksum);
 
     if(!(SERIAL_START_BYTE==start_byte_read))
     {
