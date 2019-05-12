@@ -81,7 +81,7 @@ const int MAX_ACCEL_CUTOFF = 20; // m/s^2
 
 //general openrover_basic platform constants
 const int ENCODER_MAX = 5000;
-const int ENCODER_MIN = 1;
+const int ENCODER_MIN = 40;
 const int MOTOR_FLIPPER_COEF = 100;
 
 const float ODOM_SMOOTHING = 50.0;
@@ -168,7 +168,7 @@ std::ofstream global_file ("tuning_data.csv");
 const bool LOG_CONTROLLER_DATA = false;
 
 const double K_P = 80;
-const double K_I = 200;
+const double K_I = 200; //100;
 const double K_D = 0;
 
 OpenRover::OpenRover( ros::NodeHandle& nh, ros::NodeHandle& nh_priv ) :
@@ -954,37 +954,53 @@ void OpenRover::updateOdometry()
     int left_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_LEFT];
     int right_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_RIGHT];
 
-    if((ENCODER_MIN < left_enc) && (left_enc < ENCODER_MAX))
-    {
-        if (motor_speeds_commanded_[LEFT_MOTOR_INDEX_] > 125)
-        {
-            left_vel_measured_ = odom_encoder_coef_/left_enc;
-        }
-        else
-        {
-            left_vel_measured_ = -odom_encoder_coef_/left_enc;
-        }
-    }
-    else
+    if (left_enc < ENCODER_MIN)
     {
         left_vel_measured_ = 0;
     }
-
-    if((ENCODER_MIN < right_enc) && (right_enc < ENCODER_MAX))
+    else
     {
-        if ( motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] > 125)
+        if (left_enc < ENCODER_MAX)
         {
-            right_vel_measured_ = odom_encoder_coef_/right_enc;
-        }
+            if (motor_speeds_commanded_[LEFT_MOTOR_INDEX_] > 125) // this sets direction of measured
+            {
+                left_vel_measured_ = odom_encoder_coef_/left_enc;
+            }
+            else
+            {
+                left_vel_measured_ = -odom_encoder_coef_/left_enc;
+            }
+        } 
         else
         {
-            right_vel_measured_ = -odom_encoder_coef_/right_enc;
+            left_vel_measured_ = 0;
         }
     }
-    else
+
+
+    if (right_enc < ENCODER_MIN)
     {
         right_vel_measured_ = 0;
     }
+    else
+    {
+        if (right_enc < ENCODER_MAX)
+        {
+            if ( motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] > 125)
+            {
+                right_vel_measured_ = odom_encoder_coef_/right_enc;
+            }
+            else
+            {
+                right_vel_measured_ = -odom_encoder_coef_/right_enc;
+            }
+        } 
+        else
+        {
+            right_vel_measured_ = 0;
+        }
+    }
+
     return;
 }
 
