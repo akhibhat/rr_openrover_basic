@@ -201,13 +201,12 @@ double OdomControl::filter(double velocity, double dt)
         time = dt;
     }
 
-    //Check for impossible acceleration
+    //Check for impossible acceleration, if it is impossible, ignore the measurement.
     float accel = (velocity - velocity_history_[0]) / time;
 
-    if (fabs(velocity) > MAX_ACCEL_CUTOFF_)
+    if (fabs(accel) > MAX_ACCEL_CUTOFF_)
     {
         skip_measurement_ = true;
-        //throw std::string("Skipping encoder reading");
     }
     else
     {
@@ -219,31 +218,6 @@ double OdomControl::filter(double velocity, double dt)
     }
     return velocity_filtered_;
 
-    //for billinear transform
-/*    static std::vector<float>  right_x_history(3,0);
-    static std::vector<float>  left_x_history(3,0);
-    left_x_history.insert(left_x_history.begin(), left_vel);
-    left_x_history.pop_back();
-*/
-
-    //dumb low pass filter
-/*    velocity_filtered_ = velocity_measured_ / 2 + velocity_filtered_ / 2;
-
-
-    //Billinear 2nd Order IIR Butterworth Filter
-    //x_history is measured velocitys
-/*    float a1 = 0.20657;
-    float a2 = 0.41314;
-    float a3 = 0.20657;
-    float b1 = 0.36953;
-    float b2 = -0.19582;
-
-    velocity_filtered_ = a1*left_x_history[0] + a2*left_x_history[1] + a3*left_x_history[2] + 
-        b1*velocity_history_[0] + b2*velocity_history_[1];
-    velocity_history_.insert(velocity_history_.begin(), velocity_filtered_);
-    velocity_history_.pop_back();
-    //ROS_INFO("%1.3f ||| %1.3f %1.3f %1.3f", velocity_filtered_, left_vel, velocity_history_[0], velocity_history_[1]);
- */
 }
 
 }
