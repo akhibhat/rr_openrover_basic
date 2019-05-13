@@ -168,7 +168,7 @@ std::ofstream global_file ("tuning_data.csv");
 const bool LOG_CONTROLLER_DATA = false;
 
 const double K_P = 80;
-const double K_I = 200; //100;
+const double K_I = 200;
 const double K_D = 0;
 
 OpenRover::OpenRover( ros::NodeHandle& nh, ros::NodeHandle& nh_priv ) :
