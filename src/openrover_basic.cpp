@@ -734,10 +734,6 @@ void OpenRover::serialManager()
       {  // param1==20 means sending fan speed of param2
         setParameterData(param1, param2);
       }
-      else if (param1 == 240)
-      {  // param1==240 means sending low speed command
-        setParameterData(param1, param2);
-      }
       else if (param1 == 250)
       {  // param1==250 means calibrating flipper DO NOT USE OFTEN
         setParameterData(param1, param2);

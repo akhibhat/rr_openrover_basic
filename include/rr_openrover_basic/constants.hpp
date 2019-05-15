@@ -13,9 +13,6 @@ const float ODOM_ENCODER_COEF_F = 110.8;                                   // r_
 const float ODOM_AXLE_TRACK_F = 10.75;                                     // distance between centerlines of tracks
 const float ODOM_ANGULAR_COEF_F = 0.5 / (ODOM_AXLE_TRACK_F * 2.54 / 100);  // rad per meter
 const float ODOM_TRACTION_FACTOR_F = 0.75;
-// low speed mode cmd_vel to motor command flipper constants
-const int MOTOR_SPEED_LINEAR_COEF_F_LS = 100;
-const int MOTOR_SPEED_ANGULAR_COEF_F_LS = 60;
 // high speed mode cmd_vel to motor command flipper constants
 const int MOTOR_SPEED_LINEAR_COEF_F_HS = 90;
 const int MOTOR_SPEED_ANGULAR_COEF_F_HS = 50;
@@ -26,9 +23,6 @@ const float ODOM_ENCODER_COEF_4WD = 182.405;                                   /
 const float ODOM_AXLE_TRACK_4WD = 14.375;                                      // distance between wheels
 const float ODOM_ANGULAR_COEF_4WD = 1.0 / (ODOM_AXLE_TRACK_4WD * 2.54 / 100);  // rad per meter
 const float ODOM_TRACTION_FACTOR_4WD = 0.610;
-// low speed mode cmd_vel to motor command 4wd constants
-const int MOTOR_SPEED_LINEAR_COEF_4WD_LS = 293;
-const int MOTOR_SPEED_ANGULAR_COEF_4WD_LS = 86;
 // high speed cmd_vel to motor command 4wd constants
 const int MOTOR_SPEED_LINEAR_COEF_4WD_HS = 31;
 const int MOTOR_SPEED_ANGULAR_COEF_4WD_HS = 6;
@@ -43,9 +37,6 @@ const float ODOM_ENCODER_COEF_2WD = 182.405;                                   /
 const float ODOM_AXLE_TRACK_2WD = 14.375;                                      // distance between wheels
 const float ODOM_ANGULAR_COEF_2WD = 1.0 / (ODOM_AXLE_TRACK_2WD * 2.54 / 100);  // rad per meter
 const float ODOM_TRACTION_FACTOR_2WD = 0.9877;
-// low speed mode cmd_vel to motor command 2wd constants
-const int MOTOR_SPEED_LINEAR_COEF_2WD_LS = 30;
-const int MOTOR_SPEED_ANGULAR_COEF_2WD_LS = 10;
 // high speed cmd_vel to motor command 2wd constants
 const int MOTOR_SPEED_LINEAR_COEF_2WD_HS = 30;
 const int MOTOR_SPEED_ANGULAR_COEF_2WD_HS = 10;
@@ -68,7 +59,6 @@ const int MOTOR_NEUTRAL = 125;
 const int MOTOR_SPEED_MAX = 250;
 const int MOTOR_SPEED_MIN = 0;
 const int MOTOR_DIFF_MAX = 200;  // Max command difference between left and
-// right motors in low speed mode, prevents overcurrent
 
 // Firmware parameters. Kept numbering from Firmware SDK-Protocol Documents_07-03-2018_1
 // to maintain consistency. Some parameters are still a work in progress (WIP)
