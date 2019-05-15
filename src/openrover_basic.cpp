@@ -105,6 +105,20 @@ bool OpenRover::start()
 bool OpenRover::setupRobotParams()
 {  // Get ROS params and save them to class variables
 
+  if (!(nh_priv_.getParam("port", port_)))
+  {
+    ROS_WARN("Failed to retrieve port from parameter server.Defaulting to /dev/ttyUSB0");
+    port_ = (std::string) "/dev/ttyUSB0";
+    return false;
+  }
+
+  if (!(openComs()))
+  {
+    is_serial_coms_open_ = false;
+    ROS_ERROR("Failed to start serial communication.");
+    return false;
+  }
+
   if (!(nh_priv_.getParam("fast_data_rate", fast_rate_)))
   {
     ROS_WARN("Failed to retrieve fast_data_rate from parameter. Defaulting to 10");
@@ -123,18 +137,6 @@ bool OpenRover::setupRobotParams()
     slow_rate_ = 1;
   }
 
-  if (!(nh_priv_.getParam("port", port_)))
-  {
-    ROS_WARN("Failed to retrieve port from parameter server.");
-    return false;
-  }
-
-  if (!(openComs()))
-  {
-    is_serial_coms_open_ = false;
-    ROS_ERROR("Failed to start serial communication.");
-    return false;
-  }
 
   if (!(nh_priv_.getParam("closed_loop_control_on", closed_loop_control_on_)))
   {
