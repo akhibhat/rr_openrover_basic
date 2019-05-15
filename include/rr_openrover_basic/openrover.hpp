@@ -1,5 +1,4 @@
-#ifndef _openrover_hpp
-#define _openrover_hpp
+#pragma once
 
 #include <ros/ros.h>
 #include <ros/timer.h>
@@ -17,6 +16,7 @@
 #include "rr_openrover_basic/SmartBatteryStatus.h"
 
 #include <rr_openrover_basic/odom_control.hpp>
+#include <rr_openrover_basic/constants.hpp>
 
 namespace openrover
 {
@@ -30,6 +30,7 @@ public:
                                   // min);
   OdomControl right_controller_;  //(bool use_control, double Kp, double Ki, double Kd, unsigned char max, unsigned char
                                   // min);
+  PidGains pidGains_;
 
   bool start();
   bool openComs();
@@ -113,9 +114,6 @@ private:
   double right_vel_measured_;
   double left_vel_filtered_;
   double right_vel_filtered_;
-  double K_P_;
-  double K_I_;
-  double K_D_;
 
   int motor_speed_linear_coef_;
   int motor_speed_angular_coef_;
@@ -157,4 +155,3 @@ private:
 rr_openrover_basic::SmartBatteryStatus interpret_battery_status(uint16_t bits);
 
 }  // namespace openrover
-#endif /* _openrover_hpp */

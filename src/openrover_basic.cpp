@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+
 #include <fcntl.h>
 #include <termios.h>
 #include <ctime>
@@ -41,11 +42,9 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   , publish_slow_rate_vals_(false)
   , is_serial_coms_open_(false)
   , closed_loop_control_on_(false)
-  , K_P_(K_P)
-  , K_I_(K_I)
-  , K_D_(K_D)
-  , left_controller_(closed_loop_control_on_, K_P, K_I, K_D, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN)
-  , right_controller_(closed_loop_control_on_, K_P, K_I, K_D, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN)
+  , pidGains_()
+  , left_controller_(closed_loop_control_on_, pidGains_, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN)
+  , right_controller_(closed_loop_control_on_, pidGains_, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN)
   , left_vel_commanded_(0)
   , right_vel_commanded_(0)
   , left_vel_filtered_(0)

@@ -7,10 +7,11 @@
 #include "ros/ros.h"
 
 #include <rr_openrover_basic/odom_control.hpp>
+#include <rr_openrover_basic/constants.hpp>
 
 namespace openrover
 {
-OdomControl::OdomControl(bool use_control, double Kp, double Ki, double Kd, int max, int min, std::string log_filename)
+OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min, std::string log_filename)
   : MOTOR_NEUTRAL_(125)
   , MOTOR_MAX_(max)
   , MOTOR_MIN_(min)
@@ -20,9 +21,9 @@ OdomControl::OdomControl(bool use_control, double Kp, double Ki, double Kd, int 
   , MAX_VELOCITY_(3)
   , enable_file_logging_(false)  // not implemented
   , log_filename_(log_filename)
-  , K_P_(Kp)
-  , K_I_(Ki)
-  , K_D_(Kd)
+  , K_P_(pid_gains.Kp)
+  , K_I_(pid_gains.Ki)
+  , K_D_(pid_gains.Kd)
   , velocity_history_(3, 0)
   , use_control_(use_control)
   , skip_measurement_(false)
@@ -31,7 +32,7 @@ OdomControl::OdomControl(bool use_control, double Kp, double Ki, double Kd, int 
 {
 }
 
-OdomControl::OdomControl(bool use_control, double Kp, double Ki, double Kd, int max, int min)
+OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min)
   : MOTOR_NEUTRAL_(125)
   , MOTOR_MAX_(max)
   , MOTOR_MIN_(min)
@@ -40,9 +41,9 @@ OdomControl::OdomControl(bool use_control, double Kp, double Ki, double Kd, int 
   , MIN_VELOCITY_(0.03)
   , MAX_VELOCITY_(3)
   , enable_file_logging_(false)  // not implemented
-  , K_P_(Kp)
-  , K_I_(Ki)
-  , K_D_(Kd)
+  , K_P_(pid_gains.Kp)
+  , K_I_(pid_gains.Ki)
+  , K_D_(pid_gains.Kd)
   , velocity_history_(3, 0)
   , use_control_(use_control)
   , skip_measurement_(false)
@@ -208,4 +209,4 @@ double OdomControl::filter(double velocity, double dt)
   return velocity_filtered_;
 }
 
-}
+}  // namespace openrover

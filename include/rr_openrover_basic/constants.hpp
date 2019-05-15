@@ -1,3 +1,5 @@
+#pragma once
+
 namespace openrover
 {
 const unsigned char SERIAL_START_BYTE = 253;
@@ -59,8 +61,6 @@ const int MAX_ACCEL_CUTOFF = 20;         // m/s^2
 const int ENCODER_MAX = 5000;
 const int ENCODER_MIN = 40;
 const int MOTOR_FLIPPER_COEF = 100;
-
-const float ODOM_SMOOTHING = 50.0;
 
 const float WEIGHT_COMPENSATION_FACTOR = 10.0;
 const int MOTOR_DEADBAND = 9;
@@ -146,8 +146,11 @@ const int SLOW_SIZE = sizeof(ROBOT_DATA_INDEX_SLOW) / sizeof(ROBOT_DATA_INDEX_SL
 std::ofstream global_file("tuning_data.csv");
 const bool LOG_CONTROLLER_DATA = false;
 
-const double K_P = 80;
-const double K_I = 200;
-const double K_D = 0;
+struct PidGains
+{
+  double Kp = 80;
+  double Ki = 200;
+  double Kd = 0;
+};
 
 }
