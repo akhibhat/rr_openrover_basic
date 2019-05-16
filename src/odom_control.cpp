@@ -91,12 +91,11 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
   velocity_commanded_ = commanded_vel;
   velocity_measured_ = measured_vel;
   velocity_filtered_ = filter(measured_vel, dt);
-  /*  ROS_INFO("odom Kp: %f", K_P_);
-    ROS_INFO("odom Ki: %f", K_I_);*/
 
   if (e_stop_on)
   {
     //    ROS_INFO("Odom E-Stop");
+    reset();
     return MOTOR_NEUTRAL_;
   }
 
@@ -136,36 +135,6 @@ int OdomControl::feedThroughControl()
 {
   return (int)round(velocity_commanded_ * 50 + MOTOR_NEUTRAL_);
 }
-/*
-
-unsigned char OdomControl::calculate(double commanded_vel, double measured_vel, double dt)
-{
-  velocity_commanded_ = commanded_vel;
-  velocity_measured_ = measured_vel;
-
-  if (commanded_vel == 0)
-  {  // If stopping, stop now
-    integral_value_ = 0;
-    if (hasZeroHistory(velocity_history_))
-    {
-      velocity_filtered_ = filter(measured_vel, dt);
-      return (unsigned char)MOTOR_NEUTRAL_;
-    }
-  }
-
-  velocity_filtered_ = filter(measured_vel, dt);
-  error_ = commanded_vel - velocity_filtered_;
-  if (!skip_measurement_)
-  {
-    motor_speed_ = PID(error_, dt);
-  }
-
-  motor_speed_ = deadbandOffset(motor_speed_, MOTOR_DEADBAND_);
-  motor_speed_ = boundMotorSpeed(motor_speed_, MOTOR_MAX_, MOTOR_MIN_);
-
-  return (unsigned char)motor_speed_;
-}
-*/
 
 void OdomControl::reset()
 {
