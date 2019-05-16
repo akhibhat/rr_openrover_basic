@@ -24,18 +24,16 @@ class OpenRover
 {
 public:
   OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv);
-  /*OpenRover(std::string port_, std::string drive_type_, bool enable_timeout_, float total_weight_,
-      float slippage_factor_, float odom_covariance_0_, float odom_covariance_35_);*/
-  OdomControl left_controller_;   //(bool use_control, double Kp, double Ki, double Kd, unsigned char max, unsigned char
-                                  // min);
-  OdomControl right_controller_;  //(bool use_control, double Kp, double Ki, double Kd, unsigned char max, unsigned char
-                                  // min);
+
+  OdomControl left_controller_;
+  OdomControl right_controller_;
+
   PidGains pidGains_;
 
   bool start();
   bool openComs();
   bool setupRobotParams();
-  void updateOdometry();
+  void updateMeasuredVelocities();
 
   void robotDataFastCB(const ros::WallTimerEvent& e);
   void robotDataMediumCB(const ros::WallTimerEvent& e);

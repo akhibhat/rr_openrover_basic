@@ -11,11 +11,15 @@ namespace openrover
 class OdomControl
 {
 public:
+  OdomControl();  // default
+
   OdomControl(bool use_control, PidGains pid_gains, int max, int min,
               std::string log_filename);                                // max min values for returned value
   OdomControl(bool use_control, PidGains pid_gains, int max, int min);  // max min values for returned value
 
-  unsigned char calculate(double commanded_vel, double measured_vel, double dt);  // in m/s
+  unsigned char run(bool e_stop_on, bool control_on, double commanded_vel, double measured_vel,
+                    double dt);  // in m/s
+  void start(bool use_control, PidGains pid_gains, int max, int min);
   void reset();
 
   const int MOTOR_NEUTRAL_;   // 125
@@ -70,6 +74,7 @@ private:
   double I(double error, double dt);
   double D(double error, double dt);
   int PID(double error, double dt);
+  int feedThroughControl();
 };
 
 }

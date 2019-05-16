@@ -42,9 +42,7 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   , publish_slow_rate_vals_(false)
   , is_serial_coms_open_(false)
   , closed_loop_control_on_(false)
-  , pidGains_()
-  , left_controller_(closed_loop_control_on_, pidGains_, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN)
-  , right_controller_(closed_loop_control_on_, pidGains_, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN)
+  , pidGains_(80, 200, 0)
   , left_vel_commanded_(0)
   , right_vel_commanded_(0)
   , left_vel_filtered_(0)
@@ -57,6 +55,10 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   , FLIPPER_MOTOR_INDEX_(2)
 {
   ROS_INFO("Initializing openrover driver.");
+  ROS_INFO("Kp %f", pidGains_.Kp);
+  ROS_INFO("Ki %f", pidGains_.Ki);
+  ROS_INFO("Kd %f", pidGains_.Kd);
+
   if (LOG_CONTROLLER_DATA)
   {
     global_file << "time,left_filtered,left_measured,left_commanded,right_filtered,right_measured,right_commanded"
@@ -71,6 +73,9 @@ bool OpenRover::start()
     ROS_WARN("Failed to setup Robot parameters.");
     return false;
   }
+
+  left_controller_.start(closed_loop_control_on_, pidGains_, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN);
+  right_controller_.start(closed_loop_control_on_, pidGains_, MOTOR_SPEED_MAX, MOTOR_SPEED_MIN);
 
   serial_fast_buffer_.reserve(5 * FAST_SIZE);      // reserve space for 5 sets of FAST rate data
   serial_medium_buffer_.reserve(5 * MEDIUM_SIZE);  // reserve space for 5 sets of Medium rate data
@@ -352,9 +357,6 @@ void OpenRover::cmdVelCB(const geometry_msgs::TwistStamped::ConstPtr& msg)
       e_stop_on_ = true;
       ROS_WARN("Openrover driver - Soft e-stop on.");
     }
-    motor_speeds_commanded_[LEFT_MOTOR_INDEX_] = MOTOR_NEUTRAL;
-    motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] = MOTOR_NEUTRAL;
-    motor_speeds_commanded_[FLIPPER_MOTOR_INDEX_] = MOTOR_NEUTRAL;
     return;
   }
   else
@@ -366,97 +368,10 @@ void OpenRover::cmdVelCB(const geometry_msgs::TwistStamped::ConstPtr& msg)
     }
   }
 
-  if ((linear_rate == 0) && (turn_rate != 0))
-  {
-    is_zero_point_turn = true;
-  }
-  else
-  {
-    is_zero_point_turn = false;
-  }
-  if (turn_rate > 0)
-  {
-    is_turning_cw = true;
-  }
-  else
-  {
-    is_turning_cw = false;
-  }
-
-  if (is_zero_point_turn)
-  {
-    motor_speed_deadband_scaled = motor_speed_deadband_ * weight_coef_;
-    if (is_turning_cw)
-    {
-      motor_speed_deadband_scaled = motor_speed_deadband_ * weight_coef_ * cw_turn_coef_;
-    }
-  }
-  else
-  {
-    motor_speed_deadband_scaled = motor_speed_deadband_;
-  }
-  right_motor_speed = round((linear_rate * motor_speed_linear_coef_) + (turn_rate * motor_speed_angular_coef_)) + 125;
-  left_motor_speed = round((linear_rate * motor_speed_linear_coef_) - (turn_rate * motor_speed_angular_coef_)) + 125;
   flipper_motor_speed = ((int)round(flipper_rate * motor_speed_flipper_coef_) + 125) % 250;
 
-  // Compensate for deadband
-  if (right_motor_speed > 125)
-  {
-    right_motor_speed += motor_speed_deadband_scaled;
-  }
-  else if (right_motor_speed < 125)
-  {
-    right_motor_speed -= motor_speed_deadband_scaled;
-  }
-
-  if (left_motor_speed > 125)
-  {
-    left_motor_speed += motor_speed_deadband_scaled;
-  }
-  else if (left_motor_speed < 125)
-  {
-    left_motor_speed -= motor_speed_deadband_scaled;
-  }
-
-  // Bound motor speeds to be between 0-250
-  if (right_motor_speed > MOTOR_SPEED_MAX)
-  {
-    right_motor_speed = MOTOR_SPEED_MAX;
-  }
-  if (left_motor_speed > MOTOR_SPEED_MAX)
-  {
-    left_motor_speed = MOTOR_SPEED_MAX;
-  }
-  if (right_motor_speed < MOTOR_SPEED_MIN)
-  {
-    right_motor_speed = MOTOR_SPEED_MIN;
-  }
-  if (left_motor_speed < MOTOR_SPEED_MIN)
-  {
-    left_motor_speed = MOTOR_SPEED_MIN;
-  }
-  // The following reduces max difference between motor commands to prevent over current in flippers
-  if ((right_motor_speed - left_motor_speed) > MOTOR_DIFF_MAX)
-  {
-    float average_motor_speed = (right_motor_speed + left_motor_speed) / 2;
-    right_motor_speed = average_motor_speed + MOTOR_DIFF_MAX / 2;
-    left_motor_speed = average_motor_speed - MOTOR_DIFF_MAX / 2;
-  }
-  if ((left_motor_speed - right_motor_speed) > MOTOR_DIFF_MAX)
-  {
-    float average_motor_speed = (left_motor_speed + right_motor_speed) / 2;
-    left_motor_speed = average_motor_speed + MOTOR_DIFF_MAX / 2;
-    right_motor_speed = average_motor_speed - MOTOR_DIFF_MAX / 2;
-  }
-
-  // Add most recent motor values to motor_speeds_commanded_[3] class variable if closed_loop_control_on_ is not true
-  // (open loop)
   motor_speeds_commanded_[FLIPPER_MOTOR_INDEX_] = (unsigned char)flipper_motor_speed;
-  if (!closed_loop_control_on_)
-  {
-    motor_speeds_commanded_[LEFT_MOTOR_INDEX_] = (unsigned char)left_motor_speed;
-    motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] = (unsigned char)right_motor_speed;
-  }
+
   timeout_timer.start();
   return;
 }
@@ -530,8 +445,8 @@ void OpenRover::publishOdometry(float left_vel, float right_vel)
   return;
 }
 
-void OpenRover::publishWheelVels()  // Update to publish from OdomControl
-{
+void OpenRover::publishWheelVels()
+{  // Update to publish from OdomControl
   static ros::Time ros_start_time = ros::Time::now();
   ros::Time ros_now_time = ros::Time::now();
   double run_time = (ros_now_time - ros_start_time).toSec();
@@ -764,29 +679,18 @@ void OpenRover::serialManager()
       double now_time = ros_now_time.toSec();
 
       double dt = now_time - past_time;
+      // ROS_INFO("open dt: %lf", dt);
       past_time = now_time;
       publishFastRateData();
-      updateOdometry();  // Update openrover variables based on latest encoder readings
+      updateMeasuredVelocities();  // Update openrover measured velocities based on latest encoder readings
 
-      if (e_stop_on_)
-      {
-        motor_speeds_commanded_[LEFT_MOTOR_INDEX_] = MOTOR_NEUTRAL;
-        motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] = MOTOR_NEUTRAL;
-        left_controller_.reset();
-        right_controller_.reset();
-      }
-      else
-      {
-        if (closed_loop_control_on_)
-        {
-          motor_speeds_commanded_[LEFT_MOTOR_INDEX_] =
-              left_controller_.calculate(left_vel_commanded_, left_vel_measured_, dt);
-          motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] =
-              right_controller_.calculate(right_vel_commanded_, right_vel_measured_, dt);
-          left_vel_filtered_ = left_controller_.velocity_filtered_;
-          right_vel_filtered_ = right_controller_.velocity_filtered_;
-        }
-      }
+      motor_speeds_commanded_[LEFT_MOTOR_INDEX_] =
+          left_controller_.run(e_stop_on_, closed_loop_control_on_, left_vel_commanded_, left_vel_measured_, dt);
+      motor_speeds_commanded_[RIGHT_MOTOR_INDEX_] =
+          right_controller_.run(e_stop_on_, closed_loop_control_on_, right_vel_commanded_, right_vel_measured_, dt);
+
+      left_vel_filtered_ = left_controller_.velocity_filtered_;
+      right_vel_filtered_ = right_controller_.velocity_filtered_;
 
       publishOdometry(left_vel_measured_, right_vel_measured_);  // Publish new calculated odometry
       publishWheelVels();                                        // call after publishOdomEnc()
@@ -807,7 +711,7 @@ void OpenRover::serialManager()
   return;
 }
 
-void OpenRover::updateOdometry()
+void OpenRover::updateMeasuredVelocities()
 {
   int left_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_LEFT];
   int right_enc = robot_data_[i_ENCODER_INTERVAL_MOTOR_RIGHT];

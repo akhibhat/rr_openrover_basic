@@ -138,9 +138,17 @@ const bool LOG_CONTROLLER_DATA = false;
 
 struct PidGains
 {
-  double Kp = 80;
-  double Ki = 200;
-  double Kd = 0;
+  double Kp;
+  double Ki;
+  double Kd;
+
+  PidGains(float p = 10, float i = 0, float d = 0) : Kp(p), Ki(i), Kd(d)
+  {
+  }
+
+  /*  PidGains() : Kp(80), Ki(200), Kd(0)
+    {
+    }*/
 };
 
 }
