@@ -98,8 +98,9 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
     reset();
     return MOTOR_NEUTRAL_;
   }
+  f
 
-  if (commanded_vel == 0)
+      if (commanded_vel == 0)
   {  // If stopping, stop now
     // ROS_INFO("Commanded vel == 0");
     integral_value_ = 0;
@@ -154,8 +155,8 @@ int OdomControl::PID(double error, double dt)
   double i_val = I(error, dt);
   double d_val = D(error, dt);
   double pid_val = p_val + i_val + d_val;
-  ROS_INFO("\nerror: %lf\n dt: %lf", error, dt);
-  ROS_INFO("\n kp: %lf \n ki: %lf \n kd: %lf \n", p_val, i_val, d_val);
+  // ROS_INFO("\nerror: %lf\n dt: %lf", error, dt);
+  // ROS_INFO("\n kp: %lf \n ki: %lf \n kd: %lf \n", p_val, i_val, d_val);
 
   if (fabs(pid_val) > 125)
   {
