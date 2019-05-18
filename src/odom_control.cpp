@@ -98,7 +98,6 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
     reset();
     return MOTOR_NEUTRAL_;
   }
-  f
 
       if (commanded_vel == 0)
   {  // If stopping, stop now
