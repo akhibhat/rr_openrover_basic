@@ -150,10 +150,11 @@ int OdomControl::PID(double error, double dt)
   double i_val = I(error, dt);
   double d_val = D(error, dt);
   double pid_val = p_val + i_val + d_val;
-  // ROS_INFO("\nerror: %lf\n dt: %lf", error, dt);
-  // ROS_INFO("\n kp: %lf \n ki: %lf \n kd: %lf \n", p_val, i_val, d_val);
+  ROS_DEBUG("\nerror: %lf\n dt: %lf", error, dt);
+  ROS_DEBUG("\n kp: %lf \n ki: %lf \n kd: %lf \n", p_val, i_val, d_val);
 
-  if (fabs(pid_val) > 125)
+  if (fabs(pid_val) > (MOTOR_MAX_/2.0))
+    //Only integrate if the motor's aren't already at full speed
   {
     stop_integrating_ = true;
   }
