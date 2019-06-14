@@ -19,8 +19,7 @@ void OdomControl::start(bool use_control, PidGains pid_gains, int max, int min)
 }
 
 OdomControl::OdomControl()
-  : MOTOR_NEUTRAL_(MOTOR_NEUTRAL)
-  , MOTOR_MAX_(MOTOR_SPEED_MAX)
+  : MOTOR_MAX_(MOTOR_SPEED_MAX)
   , MOTOR_MIN_(MOTOR_SPEED_MIN)
   , MOTOR_DEADBAND_(9)
   , MAX_ACCEL_CUTOFF_(20.0)
@@ -38,8 +37,7 @@ OdomControl::OdomControl()
 }
 
 OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min, std::string log_filename)
-  : MOTOR_NEUTRAL_(125)
-  , MOTOR_MAX_(max)
+  : MOTOR_MAX_(max)
   , MOTOR_MIN_(min)
   , MOTOR_DEADBAND_(9)
   , MAX_ACCEL_CUTOFF_(20.0)
@@ -59,8 +57,7 @@ OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min,
 }
 
 OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min)
-  : MOTOR_NEUTRAL_(125)
-  , MOTOR_MAX_(max)
+  : MOTOR_MAX_(max)
   , MOTOR_MIN_(min)
   , MOTOR_DEADBAND_(9)
   , MAX_ACCEL_CUTOFF_(20.0)
@@ -76,7 +73,7 @@ OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min)
   , at_max_motor_speed_(false)
   , at_min_motor_speed_(false)
   , stop_integrating_(false)
-  , error_(0)
+  , error_value_(0)
   , integral_value_(0)
   , velocity_commanded_(0)
   , velocity_measured_(0)
@@ -96,7 +93,7 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
   {
     //    ROS_INFO("Odom E-Stop");
     reset();
-    return MOTOR_NEUTRAL_;
+    return MOTOR_NEUTRAL;
   }
 
       if (commanded_vel == 0)
@@ -105,17 +102,17 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
     integral_value_ = 0;
     if (hasZeroHistory(velocity_history_))
     {
-      return (unsigned char)MOTOR_NEUTRAL_;
+      return (unsigned char)MOTOR_NEUTRAL;
     }
   }
 
   if (control_on)
   {
     // ROS_INFO("Control on");
-    error_ = commanded_vel - velocity_filtered_;
+    error_value_ = commanded_vel - velocity_filtered_;
     if (!skip_measurement_)
     {
-      motor_speed_ = PID(error_, dt);
+      motor_speed_ = PID(error_value_, dt);
       // ROS_INFO("PID: %i", motor_speed_);
     }
   }
@@ -133,18 +130,18 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
 
 int OdomControl::feedThroughControl()
 {
-  return (int)round(velocity_commanded_ * 50 + MOTOR_NEUTRAL_);
+  return (int)round(velocity_commanded_ * 50 + MOTOR_NEUTRAL);
 }
 
 void OdomControl::reset()
 {
   integral_value_ = 0;
-  error_ = 0;
+  error_value_ = 0;
   velocity_commanded_ = 0;
   velocity_measured_ = 0;
   velocity_filtered_ = 0;
   std::fill(velocity_history_.begin(), velocity_history_.end(), 0);
-  motor_speed_ = MOTOR_NEUTRAL_;
+  motor_speed_ = MOTOR_NEUTRAL;
   skip_measurement_ = false;
 }
 
