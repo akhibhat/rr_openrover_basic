@@ -22,7 +22,6 @@ public:
   void start(bool use_control, PidGains pid_gains, int max, int min);
   void reset();
 
-  const int MOTOR_NEUTRAL_;   // 125
   const int MOTOR_MAX_;       // 250
   const int MOTOR_MIN_;       // 0
   const int MOTOR_DEADBAND_;  // = 9;
@@ -49,9 +48,10 @@ public:
   double K_I_;
   double K_D_;
   double integral_value_;
+  double error_value_;
 
   // Returned value
-  int motor_speed_;  //
+  int motor_speed_;  // value between 0-250
   unsigned char deadband_offset_;
 
   // velocity feedback
@@ -60,7 +60,6 @@ public:
   double velocity_filtered_;
   std::vector<double> velocity_history_;
   bool velocity_control_on_;
-  double error_;
   bool skip_measurement_;
 
 private:
