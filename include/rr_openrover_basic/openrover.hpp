@@ -87,7 +87,7 @@ private:
   int baud_;  // serial baud rate
   int fd;
   int robot_data_[250];  // stores all received data from robot
-  int is_charging_;
+  bool is_charging_;
   int motor_speeds_commanded_[3];  // stores most recent commanded motor speeds
   const int LEFT_MOTOR_INDEX_;
   const int RIGHT_MOTOR_INDEX_;
