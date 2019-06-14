@@ -146,9 +146,6 @@ struct PidGains
   {
   }
 
-  /*  PidGains() : Kp(80), Ki(200), Kd(0)
-    {
-    }*/
 };
 
 }
