@@ -761,7 +761,7 @@ void OpenRover::updateRobotData(int param)
   try
   {
     int data = getParameterData(param);
-    if (0 > data)  // check if val is good (not negative) and if not, push param back to buffer
+    if (data < 0)  // check if val is good (not negative) and if not, push param back to buffer
     {
       throw;
     }
