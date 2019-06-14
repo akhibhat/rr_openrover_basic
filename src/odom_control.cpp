@@ -113,7 +113,7 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
     if (!skip_measurement_)
     {
       motor_speed_ = PID(error_value_, dt);
-      // ROS_INFO("PID: %i", motor_speed_);
+      ROS_DEBUG("PID: %i", motor_speed_);
     }
   }
   else
@@ -122,7 +122,6 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
     motor_speed_ = feedThroughControl();
   }
 
-  // motor_speed_ = deadbandOffset(motor_speed_, MOTOR_DEADBAND_);
   motor_speed_ = boundMotorSpeed(motor_speed_, MOTOR_MAX_, MOTOR_MIN_);
 
   return (unsigned char)motor_speed_;
