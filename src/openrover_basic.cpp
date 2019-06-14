@@ -694,7 +694,7 @@ void OpenRover::serialManager()
       right_vel_filtered_ = right_controller_.velocity_filtered_;
 
       publishOdometry(left_vel_measured_, right_vel_measured_);  // Publish new calculated odometry
-      publishWheelVels();                                        // call after publishOdomEnc()
+      publishWheelVels();                                        // call after publishOdometry()
       publishMotorSpeeds();
     }
     else if ((serial_medium_buffer_.size() == 0) && publish_med_rate_vals_)
