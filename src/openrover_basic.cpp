@@ -157,7 +157,7 @@ bool OpenRover::setupRobotParams()
 
   if (!(nh_priv_.getParam("total_weight", total_weight_)))
   {
-    ROS_WARN("Failed to retrieve total_weight_ from parameter server. Defaulting to 20 lbs");
+    ROS_WARN("Failed to retrieve total_weight from parameter server. Defaulting to 20 lbs");
     total_weight_ = 20.0;
   }
 
@@ -234,7 +234,8 @@ bool OpenRover::setupRobotParams()
 
   if (!(nh_priv_.getParam("traction_factor", odom_traction_factor_)))
   {
-    ROS_WARN("Failed to retrieve odom_traction_factor_ from parameter. Defaulting to drive_type_ traction_factor");
+    ROS_WARN("Failed to retrieve traction_factor from parameter. Defaulting to 0.61");
+    odom_traction_factor_ = 0.61;
   }
 
   if (!(nh_priv_.getParam("odom_covariance_0", odom_covariance_0_)))
