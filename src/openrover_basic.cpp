@@ -987,7 +987,6 @@ int main(int argc, char* argv[])
   ros::NodeHandle nh("");
   ros::NodeHandle nh_priv("~");
   openrover::OpenRover openrover(nh, nh_priv);
-  ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info);
   /*        if( !nh )
           {
                   ROS_FATAL( "Failed to initialize NodeHandle" );
