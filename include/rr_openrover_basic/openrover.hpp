@@ -42,9 +42,9 @@ public:
 
   void serialManager();
 
-  bool publish_fast_rate_vals_;
+  bool publish_fast_rate_hz_vals_;
   bool publish_med_rate_vals_;
-  bool publish_slow_rate_vals_;
+  bool publish_slow_rate_hz_vals_;
   bool closed_loop_control_on_;
   bool e_stop_on_;
 
@@ -75,9 +75,9 @@ private:
   ros::Publisher motor_speeds_pub;
   ros::Publisher vel_calc_pub;
 
-  ros::Publisher fast_rate_pub;
-  ros::Publisher medium_rate_pub;
-  ros::Publisher slow_rate_pub;
+  ros::Publisher fast_rate_hz_pub;
+  ros::Publisher medium_rate_hz_pub;
+  ros::Publisher slow_rate_hz_pub;
   ros::Publisher battery_status_a_pub, battery_status_b_pub;
 
   ros::Subscriber cmd_vel_sub;
@@ -93,9 +93,9 @@ private:
   const int RIGHT_MOTOR_INDEX_;
   const int FLIPPER_MOTOR_INDEX_;
   bool is_serial_coms_open_;
-  double fast_rate_;  // update rate for encoders, 10Hz recommended
-  double medium_rate_;
-  double slow_rate_;
+  double fast_rate_hz_;  // update rate for encoders, 10Hz recommended
+  double medium_rate_hz_;
+  double slow_rate_hz_;
 
   // drive dependent parameters
   float odom_encoder_coef_;
