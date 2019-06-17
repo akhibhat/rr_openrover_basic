@@ -48,7 +48,7 @@ public:
   double K_I_;
   double K_D_;
   double integral_value_;
-  double error_value_;
+  double velocity_error_;
 
   // Returned value
   int motor_speed_;  // value between 0-250
