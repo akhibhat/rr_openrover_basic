@@ -142,7 +142,7 @@ struct PidGains
   double Ki;
   double Kd;
 
-  PidGains(float p = 10, float i = 0, float d = 0) : Kp(p), Ki(i), Kd(d)
+  PidGains(float p, float i, float d) : Kp(p), Ki(i), Kd(d)
   {
   }
 
