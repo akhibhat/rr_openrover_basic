@@ -31,7 +31,7 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   : nh_(nh)
   , nh_priv_(nh_priv)
   , port_("/dev/ttyUSB0")
-  , baud_(57600)
+  , serial_baud_rate_(57600)
   , fast_rate_hz_(10.0)                                                        // can increase to 60Hz for TX2
   , medium_rate_hz_(2.0)
   , slow_rate_hz_(1.0)
@@ -774,7 +774,7 @@ bool OpenRover::sendCommand(int param1, int param2)
   write_buffer[6] =
       (char)255 - (write_buffer[1] + write_buffer[2] + write_buffer[3] + write_buffer[4] + write_buffer[5]) % 255;
 
-  if (!(fd > 0))
+  if (!(serial_port_fd_ > 0))
   {
     ROS_INFO("Serial communication failed. Attempting to restart.");
     if (!(openComs()))
@@ -783,7 +783,7 @@ bool OpenRover::sendCommand(int param1, int param2)
     }
   }
 
-  if (write(fd, write_buffer, SERIAL_OUT_PACKAGE_LENGTH) < SERIAL_OUT_PACKAGE_LENGTH)
+  if (write(serial_port_fd_, write_buffer, SERIAL_OUT_PACKAGE_LENGTH) < SERIAL_OUT_PACKAGE_LENGTH)
   {
     char str_ex[50];
     sprintf(str_ex, "Failed to send command: %02x,%02x,%02x,%02x,%02x,%02x,%02x", write_buffer[0], write_buffer[1],
@@ -799,7 +799,7 @@ int OpenRover::readCommand()
   unsigned char read_buffer[1];
   unsigned char start_byte_read, checksum, read_checksum, data1, data2, dataNO;
   int data;
-  if (!(fd > 0))
+  if (!(serial_port_fd_ > 0))
   {
     ROS_INFO("Serial communication failed. Attempting to restart.");
     if (!(openComs()))
@@ -808,19 +808,19 @@ int OpenRover::readCommand()
     }
   }
 
-  int bits_read = read(fd, read_buffer, 1);
+  int bits_read = read(serial_port_fd_, read_buffer, 1);
   start_byte_read = read_buffer[0];
 
-  read(fd, read_buffer, 1);  // get param
+  read(serial_port_fd_, read_buffer, 1);  // get param
   dataNO = read_buffer[0];
 
-  read(fd, read_buffer, 1);  // get data1
+  read(serial_port_fd_, read_buffer, 1);  // get data1
   data1 = read_buffer[0];
 
-  read(fd, read_buffer, 1);  // get data2
+  read(serial_port_fd_, read_buffer, 1);  // get data2
   data2 = read_buffer[0];
 
-  read(fd, read_buffer, 1);  // get checksum
+  read(serial_port_fd_, read_buffer, 1);  // get checksum
   read_checksum = read_buffer[0];
 
   checksum = 255 - (dataNO + data1 + data2) % 255;
@@ -829,7 +829,7 @@ int OpenRover::readCommand()
   {
     char str_ex[50];
     sprintf(str_ex, "Received bad start byte. Received: %02x", start_byte_read);
-    tcflush(fd, TCIOFLUSH);  // flush received buffer
+    tcflush(serial_port_fd_, TCIOFLUSH);  // flush received buffer
     throw std::string(str_ex);
   }
   else if (checksum != read_checksum)
@@ -837,7 +837,7 @@ int OpenRover::readCommand()
     char str_ex[50];
     sprintf(str_ex, "Received bad CRC. Received: %02x,%02x,%02x,%02x,%02x", start_byte_read, dataNO, data1, data2,
             read_checksum);
-    tcflush(fd, TCIOFLUSH);  // flush received buffer
+    tcflush(serial_port_fd_, TCIOFLUSH);  // flush received buffer
     throw std::string(str_ex);
   }
   data = (data1 << 8) + data2;
@@ -891,71 +891,71 @@ int OpenRover::getParameterData(int param)
 bool OpenRover::openComs()
 {
   ROS_INFO("Opening serial port");
-  struct termios fd_options;
+  struct termios serial_port_fd__options;
 
-  fd = ::open(port_.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-  if (fd < 0)
+  serial_port_fd_ = ::open(port_.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+  if (serial_port_fd_ < 0)
   {
     ROS_ERROR("Failed to open port: %s", strerror(errno));
     return false;
   }
-  if (0 > fcntl(fd, F_SETFL, 0))
+  if (0 > fcntl(serial_port_fd_, F_SETFL, 0))
   {
     ROS_ERROR("Failed to set port descriptor: %s", strerror(errno));
     return false;
   }
-  if (0 > tcgetattr(fd, &fd_options))
+  if (0 > tcgetattr(serial_port_fd_, &serial_port_fd__options))
   {
     ROS_ERROR("Failed to fetch port attributes: %s", strerror(errno));
     return false;
   }
-  if (0 > cfsetispeed(&fd_options, B57600))
+  if (0 > cfsetispeed(&serial_port_fd__options, B57600))
   {
     ROS_ERROR("Failed to set input baud: %s", strerror(errno));
     return false;
   }
-  if (0 > cfsetospeed(&fd_options, B57600))
+  if (0 > cfsetospeed(&serial_port_fd__options, B57600))
   {
     ROS_ERROR("Failed to set output baud: %s", strerror(errno));
     return false;
   }
 
-  fd_options.c_cflag |= (CREAD | CLOCAL | CS8);
-  fd_options.c_cflag &= ~(PARODD | CRTSCTS | CSTOPB | PARENB);
-  fd_options.c_iflag &= ~(IUCLC | IXANY | IMAXBEL | IXON | IXOFF | IUTF8 | ICRNL | INPCK);  // input modes
-  fd_options.c_oflag |= (NL0 | CR0 | TAB0 | BS0 | VT0 | FF0);
-  fd_options.c_oflag &=
+  serial_port_fd__options.c_cflag |= (CREAD | CLOCAL | CS8);
+  serial_port_fd__options.c_cflag &= ~(PARODD | CRTSCTS | CSTOPB | PARENB);
+  serial_port_fd__options.c_iflag &= ~(IUCLC | IXANY | IMAXBEL | IXON | IXOFF | IUTF8 | ICRNL | INPCK);  // input modes
+  serial_port_fd__options.c_oflag |= (NL0 | CR0 | TAB0 | BS0 | VT0 | FF0);
+  serial_port_fd__options.c_oflag &=
       ~(OPOST | ONLCR | OLCUC | OCRNL | ONOCR | ONLRET | OFILL | OFDEL | NL1 | CR1 | CR2 | TAB3 | BS1 | VT1 | FF1);
-  fd_options.c_lflag |= (NOFLSH);
-  fd_options.c_lflag &= ~(ICANON | IEXTEN | TOSTOP | ISIG | ECHOPRT | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
-  fd_options.c_cc[VINTR] = 0x03;   // INTR Character
-  fd_options.c_cc[VQUIT] = 0x1C;   // QUIT Character
-  fd_options.c_cc[VERASE] = 0x7F;  // ERASE Character
-  fd_options.c_cc[VKILL] = 0x15;   // KILL Character
-  fd_options.c_cc[VEOF] = 0x04;    // EOF Character
-  fd_options.c_cc[VTIME] = 0x01;   // Timeout in 0.1s of serial read
-  fd_options.c_cc[VMIN] = 0;       // SERIAL_IN_PACKAGE_LENGTH; //Min Number of bytes to read
-  fd_options.c_cc[VSWTC] = 0x00;
-  fd_options.c_cc[VSTART] = SERIAL_START_BYTE;  // START Character
-  fd_options.c_cc[VSTOP] = 0x13;                // STOP character
-  fd_options.c_cc[VSUSP] = 0x1A;                // SUSP character
-  fd_options.c_cc[VEOL] = 0x00;                 // EOL Character
-  fd_options.c_cc[VREPRINT] = 0x12;
-  fd_options.c_cc[VDISCARD] = 0x0F;
-  fd_options.c_cc[VWERASE] = 0x17;
-  fd_options.c_cc[VLNEXT] = 0x16;
-  fd_options.c_cc[VEOL2] = 0x00;
+  serial_port_fd__options.c_lflag |= (NOFLSH);
+  serial_port_fd__options.c_lflag &= ~(ICANON | IEXTEN | TOSTOP | ISIG | ECHOPRT | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
+  serial_port_fd__options.c_cc[VINTR] = 0x03;   // INTR Character
+  serial_port_fd__options.c_cc[VQUIT] = 0x1C;   // QUIT Character
+  serial_port_fd__options.c_cc[VERASE] = 0x7F;  // ERASE Character
+  serial_port_fd__options.c_cc[VKILL] = 0x15;   // KILL Character
+  serial_port_fd__options.c_cc[VEOF] = 0x04;    // EOF Character
+  serial_port_fd__options.c_cc[VTIME] = 0x01;   // Timeout in 0.1s of serial read
+  serial_port_fd__options.c_cc[VMIN] = 0;       // SERIAL_IN_PACKAGE_LENGTH; //Min Number of bytes to read
+  serial_port_fd__options.c_cc[VSWTC] = 0x00;
+  serial_port_fd__options.c_cc[VSTART] = SERIAL_START_BYTE;  // START Character
+  serial_port_fd__options.c_cc[VSTOP] = 0x13;                // STOP character
+  serial_port_fd__options.c_cc[VSUSP] = 0x1A;                // SUSP character
+  serial_port_fd__options.c_cc[VEOL] = 0x00;                 // EOL Character
+  serial_port_fd__options.c_cc[VREPRINT] = 0x12;
+  serial_port_fd__options.c_cc[VDISCARD] = 0x0F;
+  serial_port_fd__options.c_cc[VWERASE] = 0x17;
+  serial_port_fd__options.c_cc[VLNEXT] = 0x16;
+  serial_port_fd__options.c_cc[VEOL2] = 0x00;
 
-  if (0 > tcsetattr(fd, TCSANOW, &fd_options))
+  if (0 > tcsetattr(serial_port_fd_, TCSANOW, &serial_port_fd__options))
   {
     ROS_ERROR("Failed to set port attributes: %s", strerror(errno));
     return false;
   }
-  ::ioctl(fd, TIOCEXCL);  // turn on exclusive mode
+  ::ioctl(serial_port_fd_, TIOCEXCL);  // turn on exclusive mode
 
   ROS_INFO("Serial port opened");
   is_serial_coms_open_ = true;
-  tcflush(fd, TCIOFLUSH);  // flush received buffer
+  tcflush(serial_port_fd_, TCIOFLUSH);  // flush received buffer
 
   return true;
 }
