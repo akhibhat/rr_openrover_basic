@@ -164,9 +164,6 @@ bool OpenRover::setupRobotParams()
     motor_speed_linear_coef_ = MOTOR_SPEED_LINEAR_COEF_2WD_HS;
     motor_speed_angular_coef_ = MOTOR_SPEED_ANGULAR_COEF_2WD_HS;
     motor_speed_deadband_ = MOTOR_DEADBAND;
-    motor_speed_angular_deadband_ = MOTOR_DEADBAND;
-    cw_turn_coef_ = MOTOR_SPEED_CW_TURN_COEF;
-    weight_coef_ = 1;
   }
   else if (drive_type_ == (std::string) "4wd")
   {
@@ -176,16 +173,9 @@ bool OpenRover::setupRobotParams()
     odom_angular_coef_ = ODOM_ANGULAR_COEF_4WD;
     odom_traction_factor_ = ODOM_TRACTION_FACTOR_4WD;
 
-    float a = MOTOR_SPEED_WEIGHT_COEF_A;
-    float b = MOTOR_SPEED_WEIGHT_COEF_B;
-    float c = MOTOR_SPEED_WEIGHT_COEF_C;
-
-    weight_coef_ = a * total_weight_ * total_weight_ + b * total_weight_ + c;
-    motor_speed_linear_coef_ = (int)MOTOR_SPEED_LINEAR_COEF_4WD_HS;
-    motor_speed_angular_coef_ = (int)MOTOR_SPEED_ANGULAR_COEF_4WD_HS * weight_coef_;
+    motor_speed_linear_coef_ = MOTOR_SPEED_LINEAR_COEF_4WD_HS;
+    motor_speed_angular_coef_ = MOTOR_SPEED_ANGULAR_COEF_4WD_HS;
     motor_speed_deadband_ = MOTOR_DEADBAND;
-    motor_speed_angular_deadband_ = MOTOR_DEADBAND * weight_coef_;
-    cw_turn_coef_ = MOTOR_SPEED_CW_TURN_COEF;
   }
   else if (drive_type_ == (std::string) "flippers")
   {
@@ -198,9 +188,6 @@ bool OpenRover::setupRobotParams()
     motor_speed_linear_coef_ = MOTOR_SPEED_LINEAR_COEF_F_HS;
     motor_speed_angular_coef_ = MOTOR_SPEED_ANGULAR_COEF_F_HS;
     motor_speed_deadband_ = MOTOR_DEADBAND;
-    motor_speed_angular_deadband_ = MOTOR_DEADBAND;
-    cw_turn_coef_ = MOTOR_SPEED_CW_TURN_COEF;
-    weight_coef_ = 1;
   }
   else
   {
@@ -213,9 +200,6 @@ bool OpenRover::setupRobotParams()
     motor_speed_linear_coef_ = MOTOR_SPEED_LINEAR_COEF_F_HS;
     motor_speed_angular_coef_ = MOTOR_SPEED_ANGULAR_COEF_F_HS;
     motor_speed_deadband_ = MOTOR_DEADBAND;
-    motor_speed_angular_deadband_ = MOTOR_DEADBAND;
-    cw_turn_coef_ = MOTOR_SPEED_CW_TURN_COEF;
-    weight_coef_ = 1;
   }
 
   if (!(nh_priv_.getParam("traction_factor", odom_traction_factor_)))
