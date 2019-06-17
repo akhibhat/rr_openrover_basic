@@ -32,14 +32,14 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   , nh_priv_(nh_priv)
   , port_("/dev/ttyUSB0")
   , baud_(57600)
-  , fast_rate_hz_(10.0)                                                        // Hz -> can increase to 60Hz for TX2
-  , medium_rate_hz_(2.0)                                                       // Hz
-  , slow_rate_hz_(1.0)                                                         // Hz
+  , fast_rate_hz_(10.0)                                                        // can increase to 60Hz for TX2
+  , medium_rate_hz_(2.0)
+  , slow_rate_hz_(1.0)
   , motor_speeds_commanded_{ MOTOR_NEUTRAL, MOTOR_NEUTRAL, MOTOR_NEUTRAL }  // default motor commands to neutral
   , timeout_(0.5)                                                           // in seconds
-  , publish_fast_rate_hz_vals_(false)
-  , publish_med_rate_vals_(false)
-  , publish_slow_rate_hz_vals_(false)
+  , publish_fast_rate_values_hz_(false)
+  , publish_med_rate_values_hz_(false)
+  , publish_slow_rate_values_hz_(false)
   , is_serial_coms_open_(false)
   , closed_loop_control_on_(false)
   , pidGains_(40, 100, 0)
@@ -268,13 +268,13 @@ bool OpenRover::setupRobotParams()
 
 void OpenRover::robotDataSlowCB(const ros::WallTimerEvent& e)
 {
-  if (is_serial_coms_open_ && !publish_slow_rate_hz_vals_)
+  if (is_serial_coms_open_ && !publish_slow_rate_values_hz_)
   {
     for (int i = 0; i < SLOW_SIZE; i++)
     {
       serial_slow_buffer_.push_back(ROBOT_DATA_INDEX_SLOW[i]);
     }
-    publish_slow_rate_hz_vals_ = true;
+    publish_slow_rate_values_hz_ = true;
     // ROS_DEBUG("Slow buffer size is %i", serial_slow_buffer_.size());
   }
   return;
@@ -282,13 +282,13 @@ void OpenRover::robotDataSlowCB(const ros::WallTimerEvent& e)
 
 void OpenRover::robotDataMediumCB(const ros::WallTimerEvent& e)
 {
-  if (is_serial_coms_open_ && !publish_med_rate_vals_)
+  if (is_serial_coms_open_ && !publish_med_rate_values_hz_)
   {
     for (int i = 0; i < MEDIUM_SIZE; i++)
     {
       serial_medium_buffer_.push_back(ROBOT_DATA_INDEX_MEDIUM[i]);
     }
-    publish_med_rate_vals_ = true;
+    publish_med_rate_values_hz_ = true;
     // ROS_DEBUG("Medium buffer size is %i", serial_medium_buffer_.size());
   }
   return;
@@ -296,7 +296,7 @@ void OpenRover::robotDataMediumCB(const ros::WallTimerEvent& e)
 
 void OpenRover::robotDataFastCB(const ros::WallTimerEvent& e)
 {
-  if (is_serial_coms_open_ && !publish_fast_rate_hz_vals_)
+  if (is_serial_coms_open_ && !publish_fast_rate_values_hz_)
   {
     for (int i = 0; i < FAST_SIZE; i++)
     {
@@ -304,7 +304,7 @@ void OpenRover::robotDataFastCB(const ros::WallTimerEvent& e)
       // by the ROBOT_DATA_INDEX_FAST array
       serial_fast_buffer_.push_back(ROBOT_DATA_INDEX_FAST[i]);
     }
-    publish_fast_rate_hz_vals_ = true;
+    publish_fast_rate_values_hz_ = true;
     // ROS_DEBUG("Fast buffer size %i", serial_fast_buffer_.size());
   }
   else
@@ -491,7 +491,7 @@ void OpenRover::publishFastRateData()
   msg.right_motor = robot_data_[i_ENCODER_INTERVAL_MOTOR_RIGHT];
   msg.flipper_motor = robot_data_[i_ENCODER_INTERVAL_MOTOR_FLIPPER];
   fast_rate_hz_pub.publish(msg);
-  publish_fast_rate_hz_vals_ = false;
+  publish_fast_rate_values_hz_ = false;
   return;
 }
 
@@ -531,7 +531,7 @@ void OpenRover::publishMedRateData()
   }
 
   medium_rate_hz_pub.publish(med_msg);
-  publish_med_rate_vals_ = false;
+  publish_med_rate_values_hz_ = false;
   return;
 }
 
@@ -578,7 +578,7 @@ void OpenRover::publishSlowRateData()
   battery_status_b_pub.publish(interpret_battery_status(robot_data_[i_BATTERY_STATUS_B]));
 
   slow_rate_hz_pub.publish(slow_msg);
-  publish_slow_rate_hz_vals_ = false;
+  publish_slow_rate_values_hz_ = false;
   return;
 }
 
@@ -674,7 +674,7 @@ void OpenRover::serialManager()
     }
 
     // If one of the buffers are empty, publish the values
-    if ((serial_fast_buffer_.size() == 0) && publish_fast_rate_hz_vals_)
+    if ((serial_fast_buffer_.size() == 0) && publish_fast_rate_values_hz_)
     {
       ros::Time ros_now_time = ros::Time::now();
       double now_time = ros_now_time.toSec();
@@ -697,11 +697,11 @@ void OpenRover::serialManager()
       publishWheelVels();                                        // call after publishOdometry()
       publishMotorSpeeds();
     }
-    else if ((serial_medium_buffer_.size() == 0) && publish_med_rate_vals_)
+    else if ((serial_medium_buffer_.size() == 0) && publish_med_rate_values_hz_)
     {
       publishMedRateData();
     }
-    else if ((serial_slow_buffer_.size() == 0) && publish_slow_rate_hz_vals_)
+    else if ((serial_slow_buffer_.size() == 0) && publish_slow_rate_values_hz_)
     {
       publishSlowRateData();
     }
