@@ -26,9 +26,6 @@ const float ODOM_TRACTION_FACTOR_4WD = 0.610;
 // high speed cmd_vel to motor command 4wd constants
 const int MOTOR_SPEED_LINEAR_COEF_4WD_HS = 31;
 const int MOTOR_SPEED_ANGULAR_COEF_4WD_HS = 6;
-const float MOTOR_SPEED_WEIGHT_COEF_A = 0.0034383;
-const float MOTOR_SPEED_WEIGHT_COEF_B = -0.011618;
-const float MOTOR_SPEED_WEIGHT_COEF_C = 0.99181;
 const float MOTOR_SPEED_CW_TURN_COEF = 1.0;
 
 // 2wd constants__________
@@ -53,7 +50,6 @@ const int ENCODER_MAX = 5000;
 const int ENCODER_MIN = 40;
 const int MOTOR_FLIPPER_COEF = 100;
 
-const float WEIGHT_COMPENSATION_FACTOR = 10.0;
 const int MOTOR_DEADBAND = 9;
 const int MOTOR_NEUTRAL = 125;
 const int MOTOR_SPEED_MAX = 250;
