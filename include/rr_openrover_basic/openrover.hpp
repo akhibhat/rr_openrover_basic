@@ -84,8 +84,8 @@ private:
   ros::Subscriber fan_speed_sub;
 
   // General Class variables
-  int baud_;  // serial baud rate
-  int fd;
+  int serial_baud_rate_;
+  int serial_port_fd_;
   int robot_data_[250];  // stores all received data from robot
   bool is_charging_;
   int motor_speeds_commanded_[3];  // stores most recent commanded motor speeds
