@@ -109,7 +109,6 @@ bool OpenRover::setupRobotParams()
   {
     ROS_WARN("Failed to retrieve port from parameter server.Defaulting to /dev/ttyUSB0");
     port_ = (std::string) "/dev/ttyUSB0";
-    return false;
   }
 
   if (!(openComs()))
