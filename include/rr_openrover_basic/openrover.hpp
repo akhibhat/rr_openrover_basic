@@ -42,9 +42,9 @@ public:
 
   void serialManager();
 
-  bool publish_fast_rate_hz_vals_;
-  bool publish_med_rate_vals_;
-  bool publish_slow_rate_hz_vals_;
+  bool publish_fast_rate_values_hz_;
+  bool publish_med_rate_values_hz_;
+  bool publish_slow_rate_values_hz_;
   bool closed_loop_control_on_;
   bool e_stop_on_;
 
