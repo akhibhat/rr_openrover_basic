@@ -59,11 +59,6 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   ROS_INFO("Ki %f", pidGains_.Ki);
   ROS_INFO("Kd %f", pidGains_.Kd);
 
-  if (LOG_CONTROLLER_DATA)
-  {
-    global_file << "time,left_filtered,left_measured,left_commanded,right_filtered,right_measured,right_commanded"
-                << std::endl;
-  }
 }
 
 bool OpenRover::start()
@@ -464,19 +459,7 @@ void OpenRover::publishWheelVels()
   vel_vec.data.push_back(motor_speeds_commanded_[RIGHT_MOTOR_INDEX_]);
 
   vel_calc_pub.publish(vel_vec);
-  if (global_file.is_open() && LOG_CONTROLLER_DATA)
-  {
-    double ros_now_time = ros::Time::now().toNSec();
-    // ROS_INFO("writing to file");
-    int vsize = vel_vec.data.size();
-    global_file << run_time << ",";
-    for (int n = 0; n < vsize; n++)
-    {
-      global_file << vel_vec.data[n];
-      global_file << ",";
-    }
-    global_file << std::endl;
-  }
+
   return;
 }
 

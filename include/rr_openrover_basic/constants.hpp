@@ -133,9 +133,6 @@ const int FAST_SIZE = sizeof(ROBOT_DATA_INDEX_FAST) / sizeof(ROBOT_DATA_INDEX_FA
 const int MEDIUM_SIZE = sizeof(ROBOT_DATA_INDEX_MEDIUM) / sizeof(ROBOT_DATA_INDEX_MEDIUM[0]);
 const int SLOW_SIZE = sizeof(ROBOT_DATA_INDEX_SLOW) / sizeof(ROBOT_DATA_INDEX_SLOW[0]);
 
-std::ofstream global_file("tuning_data.csv");
-const bool LOG_CONTROLLER_DATA = false;
-
 struct PidGains
 {
   double Kp;
