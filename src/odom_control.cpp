@@ -73,7 +73,7 @@ OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min)
   , at_max_motor_speed_(false)
   , at_min_motor_speed_(false)
   , stop_integrating_(false)
-  , error_value_(0)
+  , velocity_error_(0)
   , integral_value_(0)
   , velocity_commanded_(0)
   , velocity_measured_(0)
@@ -109,10 +109,10 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
   if (control_on)
   {
     // ROS_INFO("Control on");
-    error_value_ = commanded_vel - velocity_filtered_;
+    velocity_error_ = commanded_vel - velocity_filtered_;
     if (!skip_measurement_)
     {
-      motor_speed_ = PID(error_value_, dt);
+      motor_speed_ = PID(velocity_error_, dt);
       ROS_DEBUG("PID: %i", motor_speed_);
     }
   }
@@ -135,7 +135,7 @@ int OdomControl::feedThroughControl()
 void OdomControl::reset()
 {
   integral_value_ = 0;
-  error_value_ = 0;
+  velocity_error_ = 0;
   velocity_commanded_ = 0;
   velocity_measured_ = 0;
   velocity_filtered_ = 0;
