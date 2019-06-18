@@ -89,26 +89,26 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
   velocity_measured_ = measured_vel;
   velocity_filtered_ = filter(measured_vel, dt);
 
+  //If rover is E-Stopped, respond with NEUTRAL comman
   if (e_stop_on)
   {
-    //    ROS_INFO("Odom E-Stop");
     reset();
     return MOTOR_NEUTRAL;
   }
 
-      if (commanded_vel == 0)
-  {  // If stopping, stop now
-    // ROS_INFO("Commanded vel == 0");
+  // If stopping, stop now
+  if (commanded_vel == 0)
+  {
     integral_value_ = 0;
     if (hasZeroHistory(velocity_history_))
     {
-      return (unsigned char)MOTOR_NEUTRAL;
+      return MOTOR_NEUTRAL;
     }
   }
 
+  // If controller should be ON, run it.
   if (control_on)
   {
-    // ROS_INFO("Control on");
     velocity_error_ = commanded_vel - velocity_filtered_;
     if (!skip_measurement_)
     {
@@ -243,7 +243,7 @@ double OdomControl::filter(double velocity, double dt)
   // Check for impossible acceleration, if it is impossible, ignore the measurement.
   float accel = (velocity - velocity_history_[0]) / time;
 
-  if (fabs(accel) > MAX_ACCEL_CUTOFF_)
+  if (false) //fabs(accel) > MAX_ACCEL_CUTOFF_)
   {
     skip_measurement_ = true;
   }
