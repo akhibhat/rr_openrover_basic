@@ -309,7 +309,6 @@ void OpenRover::cmdVelCB(const geometry_msgs::TwistStamped::ConstPtr& msg)
   double linear_rate = msg->twist.linear.x;
   double flipper_rate = msg->twist.angular.y;
   std::string frame_id = msg->header.frame_id;
-  bool is_moving_forward, is_turning_cw, is_stationary, is_zero_point_turn;
 
   double diff_vel_commanded = turn_rate / odom_angular_coef_ / odom_traction_factor_;
 
