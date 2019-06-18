@@ -37,9 +37,9 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   , slow_rate_hz_(1.0)
   , motor_speeds_commanded_{ MOTOR_NEUTRAL, MOTOR_NEUTRAL, MOTOR_NEUTRAL }  // default motor commands to neutral
   , timeout_(0.2)                                                           // in seconds
-  , publish_fast_rate_values_hz_(false)
-  , publish_med_rate_values_hz_(false)
-  , publish_slow_rate_values_hz_(false)
+  , publish_fast_rate_values_(false)
+  , publish_med_rate_values_(false)
+  , publish_slow_rate_values_(false)
   , is_serial_coms_open_(false)
   , closed_loop_control_on_(false)
   , pidGains_(40, 100, 0)
@@ -85,9 +85,9 @@ bool OpenRover::start()
   slow_timer = nh_priv_.createWallTimer(ros::WallDuration(1.0 / slow_rate_hz_), &OpenRover::robotDataSlowCB, this);
   timeout_timer = nh_priv_.createWallTimer(ros::WallDuration(timeout_), &OpenRover::timeoutCB, this, true);
 
-  fast_rate_hz_pub = nh_priv_.advertise<rr_openrover_basic::RawRrOpenroverBasicFastRateData>("raw_fast_rate_hz_data", 1);
-  medium_rate_hz_pub = nh_priv_.advertise<rr_openrover_basic::RawRrOpenroverBasicMedRateData>("raw_med_rate_data", 1);
-  slow_rate_hz_pub = nh_priv_.advertise<rr_openrover_basic::RawRrOpenroverBasicSlowRateData>("raw_slow_rate_hz_data", 1);
+  fast_rate_pub = nh_priv_.advertise<rr_openrover_basic::RawRrOpenroverBasicFastRateData>("raw_fast_rate_data", 1);
+  medium_rate_pub = nh_priv_.advertise<rr_openrover_basic::RawRrOpenroverBasicMedRateData>("raw_med_rate_data", 1);
+  slow_rate_pub = nh_priv_.advertise<rr_openrover_basic::RawRrOpenroverBasicSlowRateData>("raw_slow_rate_data", 1);
   battery_status_a_pub = nh_priv_.advertise<rr_openrover_basic::SmartBatteryStatus>("battery_status_a", 1);
   battery_status_b_pub = nh_priv_.advertise<rr_openrover_basic::SmartBatteryStatus>("battery_status_b", 1);
   odom_enc_pub = nh_priv_.advertise<nav_msgs::Odometry>("odom_encoder", 1);
@@ -229,44 +229,42 @@ bool OpenRover::setupRobotParams()
   ROS_INFO("traction_factor: %f", odom_traction_factor_);
   ROS_INFO("odom_covariance_0: %f", odom_covariance_0_);
   ROS_INFO("odom_covariance_35: %f", odom_covariance_35_);
-  ROS_INFO("fast_data_rate: %f", fast_rate_hz_);
-  ROS_INFO("medium_data_rate: %f", medium_rate_hz_);
-  ROS_INFO("slow_data_rate: %f", slow_rate_hz_);
+  ROS_INFO("fast_data_rate: %f hz", fast_rate_hz_);
+  ROS_INFO("medium_data_rate: %f hz", medium_rate_hz_);
+  ROS_INFO("slow_data_rate: %f hz", slow_rate_hz_);
 
   return true;
 }
 
 void OpenRover::robotDataSlowCB(const ros::WallTimerEvent& e)
 {
-  if (is_serial_coms_open_ && !publish_slow_rate_values_hz_)
+  if (is_serial_coms_open_ && !publish_slow_rate_values_)
   {
     for (int i = 0; i < SLOW_SIZE; i++)
     {
       serial_slow_buffer_.push_back(ROBOT_DATA_INDEX_SLOW[i]);
     }
-    publish_slow_rate_values_hz_ = true;
-    // ROS_DEBUG("Slow buffer size is %i", serial_slow_buffer_.size());
+    publish_slow_rate_values_ = true;
   }
   return;
 }
 
 void OpenRover::robotDataMediumCB(const ros::WallTimerEvent& e)
 {
-  if (is_serial_coms_open_ && !publish_med_rate_values_hz_)
+  if (is_serial_coms_open_ && !publish_med_rate_values_)
   {
     for (int i = 0; i < MEDIUM_SIZE; i++)
     {
       serial_medium_buffer_.push_back(ROBOT_DATA_INDEX_MEDIUM[i]);
     }
-    publish_med_rate_values_hz_ = true;
-    // ROS_DEBUG("Medium buffer size is %i", serial_medium_buffer_.size());
+    publish_med_rate_values_ = true;
   }
   return;
 }
 
 void OpenRover::robotDataFastCB(const ros::WallTimerEvent& e)
 {
-  if (is_serial_coms_open_ && !publish_fast_rate_values_hz_)
+  if (is_serial_coms_open_ && !publish_fast_rate_values_)
   {
     for (int i = 0; i < FAST_SIZE; i++)
     {
@@ -274,8 +272,7 @@ void OpenRover::robotDataFastCB(const ros::WallTimerEvent& e)
       // by the ROBOT_DATA_INDEX_FAST array
       serial_fast_buffer_.push_back(ROBOT_DATA_INDEX_FAST[i]);
     }
-    publish_fast_rate_values_hz_ = true;
-    // ROS_DEBUG("Fast buffer size %i", serial_fast_buffer_.size());
+    publish_fast_rate_values_ = true;
   }
   else
   {
@@ -448,8 +445,8 @@ void OpenRover::publishFastRateData()
   msg.left_motor = robot_data_[i_ENCODER_INTERVAL_MOTOR_LEFT];
   msg.right_motor = robot_data_[i_ENCODER_INTERVAL_MOTOR_RIGHT];
   msg.flipper_motor = robot_data_[i_ENCODER_INTERVAL_MOTOR_FLIPPER];
-  fast_rate_hz_pub.publish(msg);
-  publish_fast_rate_values_hz_ = false;
+  fast_rate_pub.publish(msg);
+  publish_fast_rate_values_ = false;
   return;
 }
 
@@ -488,8 +485,8 @@ void OpenRover::publishMedRateData()
     is_charging_pub.publish(is_charging_msg);
   }
 
-  medium_rate_hz_pub.publish(med_msg);
-  publish_med_rate_values_hz_ = false;
+  medium_rate_pub.publish(med_msg);
+  publish_med_rate_values_ = false;
   return;
 }
 
@@ -535,8 +532,8 @@ void OpenRover::publishSlowRateData()
   battery_status_a_pub.publish(interpret_battery_status(robot_data_[i_BATTERY_STATUS_A]));
   battery_status_b_pub.publish(interpret_battery_status(robot_data_[i_BATTERY_STATUS_B]));
 
-  slow_rate_hz_pub.publish(slow_msg);
-  publish_slow_rate_values_hz_ = false;
+  slow_rate_pub.publish(slow_msg);
+  publish_slow_rate_values_ = false;
   return;
 }
 
@@ -632,7 +629,7 @@ void OpenRover::serialManager()
     }
 
     // If one of the buffers are empty, publish the values
-    if ((serial_fast_buffer_.size() == 0) && publish_fast_rate_values_hz_)
+    if ((serial_fast_buffer_.size() == 0) && publish_fast_rate_values_)
     {
       ros::Time ros_now_time = ros::Time::now();
       double now_time = ros_now_time.toSec();
@@ -655,11 +652,11 @@ void OpenRover::serialManager()
       publishWheelVels();                                        // call after publishOdometry()
       publishMotorSpeeds();
     }
-    else if ((serial_medium_buffer_.size() == 0) && publish_med_rate_values_hz_)
+    else if ((serial_medium_buffer_.size() == 0) && publish_med_rate_values_)
     {
       publishMedRateData();
     }
-    else if ((serial_slow_buffer_.size() == 0) && publish_slow_rate_values_hz_)
+    else if ((serial_slow_buffer_.size() == 0) && publish_slow_rate_values_)
     {
       publishSlowRateData();
     }
