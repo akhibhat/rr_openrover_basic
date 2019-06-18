@@ -85,6 +85,7 @@ OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min)
 
 unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded_vel, double measured_vel, double dt)
 {
+    ROS_INFO("Run Time dt, %f", dt);
   velocity_commanded_ = commanded_vel;
   velocity_measured_ = measured_vel;
   velocity_filtered_ = filter(measured_vel, dt);
@@ -96,8 +97,8 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
     return MOTOR_NEUTRAL;
   }
 
-  // If stopping, stop now
-  if (commanded_vel == 0)
+  // If stopping, stop now when velocity has slowed.
+  if ((commanded_vel == 0.0) && (fabs(velocity_filtered_)<0.3))
   {
     integral_value_ = 0;
     if (hasZeroHistory(velocity_history_))
@@ -118,7 +119,6 @@ unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded
   }
   else
   {
-    // ROS_INFO("Control off");
     motor_speed_ = feedThroughControl();
   }
 
@@ -230,32 +230,34 @@ int OdomControl::deadbandOffset(int motor_speed, int deadband_offset)
 double OdomControl::filter(double velocity, double dt)
 {
   static double time = 0;
-
-  if (skip_measurement_)
-  {
-    time += dt;
-  }
-  else
-  {
-    time = dt;
-  }
+  float change_in_velocity = 0;
 
   // Check for impossible acceleration, if it is impossible, ignore the measurement.
-  float accel = (velocity - velocity_history_[0]) / time;
+  float accel = (velocity - velocity_history_[0]) / dt;
 
-  if (false) //fabs(accel) > MAX_ACCEL_CUTOFF_)
+  if (accel > MAX_ACCEL_CUTOFF_)
   {
-    skip_measurement_ = true;
+    change_in_velocity = dt*MAX_ACCEL_CUTOFF_;
+    velocity = velocity_history_[0] + change_in_velocity;
   }
-  else
+  else if (accel < -MAX_ACCEL_CUTOFF_)
   {
-    skip_measurement_ = false;
-    // Hanning low pass filter filter
-    velocity_filtered_ = 0.25 * velocity + 0.5 * velocity_history_[0] + 0.25 * velocity_history_[1];
-    velocity_history_.insert(velocity_history_.begin(), velocity_filtered_);
-    velocity_history_.pop_back();
+    change_in_velocity = -dt*MAX_ACCEL_CUTOFF_;
+    velocity = velocity_history_[0] + change_in_velocity;
   }
+
+    ROS_INFO("Measured Accel, %f", accel);
+    ROS_INFO("Max Accel, %f", MAX_ACCEL_CUTOFF_);
+    ROS_INFO("Time, %f", dt);
+    ROS_INFO("Delta V with, %f", change_in_velocity);
+
+// Hanning low pass filter filter
+velocity_filtered_ = 0.25 * velocity + 0.5 * velocity_history_[0] + 0.25 * velocity_history_[1];
+velocity_history_.insert(velocity_history_.begin(), velocity_filtered_);
+velocity_history_.pop_back();
+
   return velocity_filtered_;
 }
+
 
 }  // namespace openrover
