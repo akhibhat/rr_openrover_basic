@@ -42,9 +42,9 @@ public:
 
   void serialManager();
 
-  bool publish_fast_rate_values_hz_;
-  bool publish_med_rate_values_hz_;
-  bool publish_slow_rate_values_hz_;
+  bool publish_fast_rate_values_;
+  bool publish_med_rate_values_;
+  bool publish_slow_rate_values_;
   bool closed_loop_control_on_;
   bool e_stop_on_;
 
@@ -75,9 +75,9 @@ private:
   ros::Publisher motor_speeds_pub;
   ros::Publisher vel_calc_pub;
 
-  ros::Publisher fast_rate_hz_pub;
-  ros::Publisher medium_rate_hz_pub;
-  ros::Publisher slow_rate_hz_pub;
+  ros::Publisher fast_rate_pub;
+  ros::Publisher medium_rate_pub;
+  ros::Publisher slow_rate_pub;
   ros::Publisher battery_status_a_pub, battery_status_b_pub;
 
   ros::Subscriber cmd_vel_sub;
