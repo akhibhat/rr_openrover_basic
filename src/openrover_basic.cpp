@@ -635,7 +635,6 @@ void OpenRover::serialManager()
       double now_time = ros_now_time.toSec();
 
       double dt = now_time - past_time;
-      // ROS_INFO("open dt: %lf", dt);
       past_time = now_time;
       publishFastRateData();
       updateMeasuredVelocities();  // Update openrover measured velocities based on latest encoder readings
