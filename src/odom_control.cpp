@@ -85,7 +85,6 @@ OdomControl::OdomControl(bool use_control, PidGains pid_gains, int max, int min)
 
 unsigned char OdomControl::run(bool e_stop_on, bool control_on, double commanded_vel, double measured_vel, double dt)
 {
-    ROS_INFO("Run Time dt, %f", dt);
   velocity_commanded_ = commanded_vel;
   velocity_measured_ = measured_vel;
   velocity_filtered_ = filter(measured_vel, dt);
@@ -245,11 +244,6 @@ double OdomControl::filter(double velocity, double dt)
     change_in_velocity = -dt*MAX_ACCEL_CUTOFF_;
     velocity = velocity_history_[0] + change_in_velocity;
   }
-
-    ROS_INFO("Measured Accel, %f", accel);
-    ROS_INFO("Max Accel, %f", MAX_ACCEL_CUTOFF_);
-    ROS_INFO("Time, %f", dt);
-    ROS_INFO("Delta V with, %f", change_in_velocity);
 
 // Hanning low pass filter filter
 velocity_filtered_ = 0.25 * velocity + 0.5 * velocity_history_[0] + 0.25 * velocity_history_[1];
