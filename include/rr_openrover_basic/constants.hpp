@@ -46,7 +46,7 @@ const int MAX_ACCEL_CUTOFF = 20;         // m/s^2
 // the rovers can only go fast enough to get an encoder reading down to ~50 so
 // anything lower is most likely a stall condition being misread. Over 4000 is
 // a rover moving slower than ~1mm/s which is essentially stopped.
-const int ENCODER_MAX = 5000;
+const int ENCODER_MAX = 14000;
 const int ENCODER_MIN = 40;
 const int MOTOR_FLIPPER_COEF = 100;
 
