@@ -2,6 +2,11 @@
 Changelog for package rr_openrover_basic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.7.1 (2019-6-24)
+------------------
+* Changed default port to `/dev/rover`
+* Changed CMAke to install `diagnostics.py`
+
 0.7.0 (2019-5-13)
 ------------------
 * Fixed issue #12
@@ -21,11 +26,6 @@ Changelog for package rr_openrover_basic
 * Changed default drive type to 4WD
 * Changed default closed_loop_control_on to false
 * Removed low_speed_mode
-
-0.6.0 (2018-12-11)
-------------------
-* Added /rr_openrover_basic/battery_status_a
-* Added /rr_openrover_basic/battery_status_b
 
 0.6.0 (2018-12-08)
 ------------------
