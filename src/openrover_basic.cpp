@@ -55,10 +55,6 @@ OpenRover::OpenRover(ros::NodeHandle& nh, ros::NodeHandle& nh_priv)
   , FLIPPER_MOTOR_INDEX_(2)
 {
   ROS_INFO("Initializing openrover driver.");
-  ROS_INFO("Kp %f", pidGains_.Kp);
-  ROS_INFO("Ki %f", pidGains_.Ki);
-  ROS_INFO("Kd %f", pidGains_.Kd);
-
 }
 
 bool OpenRover::start()
@@ -220,6 +216,24 @@ bool OpenRover::setupRobotParams()
     odom_covariance_35_ = 0.03;
   }
 
+  if (!(nh_priv_.getParam("Kp", pidGains_.Kp)))
+  {
+    ROS_WARN("Failed to retrieve Kp from parameter. Defaulting to 10");
+    pidGains_.Kp = 10;
+  }
+
+  if (!(nh_priv_.getParam("Ki", pidGains_.Ki)))
+  {
+    ROS_WARN("Failed to retrieve Ki from parameter. Defaulting to 10");
+    pidGains_.Ki = 10;
+  }
+
+  if (!(nh_priv_.getParam("Kd", pidGains_.Kd)))
+  {
+    ROS_WARN("Failed to retrieve Kd from parameter. Defaulting to 0");
+    pidGains_.Kd = 0;
+  }
+
   ROS_INFO("Openrover parameters loaded:");
   ROS_INFO("port: %s", port_.c_str());
   ROS_INFO("drive_type: %s", drive_type_.c_str());
@@ -232,7 +246,10 @@ bool OpenRover::setupRobotParams()
   ROS_INFO("fast_data_rate: %f hz", fast_rate_hz_);
   ROS_INFO("medium_data_rate: %f hz", medium_rate_hz_);
   ROS_INFO("slow_data_rate: %f hz", slow_rate_hz_);
-
+  ROS_INFO("Kp %f", pidGains_.Kp);
+  ROS_INFO("Ki %f", pidGains_.Ki);
+  ROS_INFO("Kd %f", pidGains_.Kd);
+  
   return true;
 }
 
